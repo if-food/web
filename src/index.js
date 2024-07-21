@@ -1,15 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-//import App from './App';
-import Cadastro from './views/cadastro/cadastro';
 import reportWebVitals from './reportWebVitals';
 import 'tailwindcss/tailwind.css';
+
+//import App from './App';
+//import Cadastro from './views/cadastro/Cadastro';
+//import Login from './views/login/Login';
+//import RecuperacaoSenha from './views/login/RecuperacaoSenha';
+//import ConfirmarEmail from "./views/login/ConfirmarEmail";
+//import NovaSenha from "./views/login/NovaSenha"
+//import SenhaAtualizada from "./views/login/SenhaAtualizada";
+//import ConfirmarCadastro from './views/cadastro/ConfirmarCadastro';
+//import ConfirmarCadastro from './views/cadastro/ConfirmarCadastro';
+import CadastroCompleto from './views/cadastro/CadastroCompleto';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Cadastro />
+    <CadastroCompleto />
   </React.StrictMode>
 );
 

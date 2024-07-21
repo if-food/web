@@ -2,7 +2,7 @@ import React from 'react';
 import iffood from "../../assets/iffood.png";
 import imagem1 from "../../assets/imagem1.png";
 
-function App() {
+function Cadastro() {
     return (
         <div className="flex h-screen">
             <div className="w-1/2 flex flex-col items-center justify-center bg-gray-100">
@@ -44,7 +44,7 @@ function App() {
                         </div>
                     </div>
                    
-                    <button className="w-1/3 bg-green-500 text-white font-bold text-lg py-2 rounded-lg hover:bg-blue-700">Enviar</button>
+                    <button className="w-1/3 bg-green-500 text-white font-bold text-lg py-2 rounded-xl hover:bg-blue-700">Enviar</button>
                 </form>
             </div>
             <div className="w-1/2">
@@ -58,4 +58,4 @@ function App() {
     );
 }
 
-export default App;
+export default Cadastro;
