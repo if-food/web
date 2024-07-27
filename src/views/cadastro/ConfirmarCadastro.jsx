@@ -6,7 +6,7 @@ import Verificado from "../../assets/Verificado.png";
 
 function ConfirmarCadastro() {
     return (
-        <div className="h-screen bg-gradient-to-r from-black via-black to-transparent flex items-center justify-center">
+        <div className="h-screen  flex items-center justify-center">
             <div className="flex w-full max-w-6xl">
                 <div className="w-1/2 flex items-center justify-center">
                     <img

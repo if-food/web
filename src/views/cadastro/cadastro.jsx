@@ -5,7 +5,7 @@ import imagem1 from "../../assets/imagem1.png";
 function Cadastro() {
     return (
         <div className="flex h-screen">
-            <div className="w-1/2 flex flex-col items-center justify-center bg-gray-100">
+            <div className="w-1/2 flex flex-col items-center justify-center ">
                 <div className="mb-8">
                     <img
                         src={iffood}

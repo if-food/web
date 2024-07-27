@@ -5,8 +5,8 @@ import reportWebVitals from './reportWebVitals';
 import 'tailwindcss/tailwind.css';
 
 //import App from './App';
-//import Cadastro from './views/cadastro/Cadastro';
-//import Login from './views/login/Login';
+import Cadastro from './views/cadastro/Cadastro';
+import Login from './views/login/Login';
 //import RecuperacaoSenha from './views/login/RecuperacaoSenha';
 //import ConfirmarEmail from "./views/login/ConfirmarEmail";
 //import NovaSenha from "./views/login/NovaSenha"
@@ -17,9 +17,11 @@ import CadastroCompleto from './views/cadastro/CadastroCompleto';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <CadastroCompleto />
-  </React.StrictMode>
+  <div className='bg-gradient-to-t from-[#1F2026] via-black to-[#37383F]'>
+    <React.StrictMode>
+      <CadastroCompleto />
+    </React.StrictMode>
+  </div>
 );
 
 // If you want to start measuring performance in your app, pass a function
