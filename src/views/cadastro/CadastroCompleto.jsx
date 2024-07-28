@@ -2,7 +2,7 @@ import React from 'react';
 import iffood from "../../assets/iffood.png";
 import imagem1 from "../../assets/imagem1.png";
 
-function Cadastro() {
+function CadastroCompleto() {
     return (
         <div className="flex h-screen">
             <div className="w-1/2 flex flex-col items-center justify-center ">
@@ -19,7 +19,7 @@ function Cadastro() {
 
 
                                 <div class="col-span-full">
-                                    <label for="photo" class="block text-sm font-medium leading-6 text-gray-900">Photo</label>
+                                    <label for="photo" class="block text-sm font-medium leading-6 text-gray-900">Adicione uma foto</label>
                                     <div class="mt-2 flex items-center gap-x-3">
                                         <svg class="h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                             <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd" />
@@ -29,7 +29,7 @@ function Cadastro() {
                                 </div>
 
                                 <div class="col-span-full">
-                                    <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Cover photo</label>
+                                    <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Adicione uma foto de capa</label>
                                     <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                                         <div class="text-center">
                                             <svg class="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -37,12 +37,12 @@ function Cadastro() {
                                             </svg>
                                             <div class="mt-4 flex text-sm leading-6 text-gray-600">
                                                 <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                                                    <span>Upload a file</span>
+                                                    <span>Upload</span>
                                                     <input id="file-upload" name="file-upload" type="file" class="sr-only" />
                                                 </label>
-                                                <p class="pl-1">or drag and drop</p>
+                                                <p class="pl-1">ou arraste até aqui</p>
                                             </div>
-                                            <p class="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                                            <p class="text-xs leading-5 text-gray-600">PNG, JPG, GIF até 10MB</p>
                                         </div>
                                     </div>
                                 </div>
@@ -137,4 +137,4 @@ function Cadastro() {
     );
 }
 
-export default Cadastro;
+export default CadastroCompleto;
