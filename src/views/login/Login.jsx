@@ -1,6 +1,6 @@
 import React from 'react';
 import iffood from "../../assets/iffood.png";
-import imagem1 from "../../assets/imagem1.png";
+import { Link } from 'react-router-dom';
 
 
 function Login() {
@@ -29,7 +29,7 @@ function Login() {
                             <label className="block text-white mb-2 text-xl" htmlFor="senha">Senha</label>
 
                             <input className="w-full px-3 py-2 border rounded-xl text-xl" type="senha" id="senha" Placeholder="Insira sua Senha" />
-                            <p className="px-3 mt-3 text-white text-xs">Esqueci minha senha</p>
+                            <Link className="px-3 mt-3 text-white text-xs" to="recuperacao-senha"> Esqueci minha senha </Link>
                         </div>
 
                         <button style={{ backgroundColor: '#24A645' }} className="w-2/4  text-white py-2 rounded-xl text-xl hover:bg-blue-700">Continuar</button>

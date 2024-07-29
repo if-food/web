@@ -1,9 +1,18 @@
 import React from 'react';
 import iffood from "../../assets/iffood.png";
+import {useNavigate} from "react-router-dom";
 
 
 
 function RecuperacaoSenha() {
+
+    //navegação
+    const navigate = useNavigate();
+    const handleSubmit = (e) =>{
+        e.preventDefault();
+        navigate('/confirmar-email')
+    }
+
     return (
         <div className="h-screen  flex items-center justify-center">
             <div className="flex w-full max-w-6xl">
@@ -16,7 +25,7 @@ function RecuperacaoSenha() {
                 </div>
                 <div className="w-1/2 flex flex-col items-center justify-center  p-8 rounded-lg shadow-lg">
 
-                    <form className="w-full">
+                    <form onSubmit={handleSubmit} className="w-full">
                         <h2 className="text-5xl text-white font-bold mb-8">Recuperaçao de Senha</h2>
 
                         <div className="mb-8">
@@ -27,7 +36,7 @@ function RecuperacaoSenha() {
 
                        
 
-                        <button style={{ backgroundColor: '#24A645' }} className="w-2/4  text-white py-2 rounded-xl text-xl hover:bg-blue-700">Enviar</button>
+                        <button type='submit' style={{ backgroundColor: '#24A645' }} className="w-2/4  text-white py-2 rounded-xl text-xl hover:bg-blue-700" >Enviar</button>
 
                         <p  className="px-3 mt-3 text-white text-xs ">Não tem uma Conta? <a className="underline" href="https://tailwindcss.com/docs/margin">Faça seu Cadastro.</a></p>
                     </form>
