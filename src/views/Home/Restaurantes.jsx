@@ -1,118 +1,76 @@
-import iffood from "../../assets/iffood.png";
+// Restaurantes.js
+import React, { useEffect, useState } from 'react';
+import { useTable } from 'react-table';
 import axios from 'axios';
-import React, { useEffect, useState } from "react";
-import { Button, Container, Divider, Header, Icon, Modal, Table } from 'semantic-ui-react';
-import { Link } from "react-router-dom";
 
-function Restaurantes () {
+const Restaurantes = () => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const [lista, setLista] = useState([]);
-    const [openModal, setOpenModal] = useState(false);
-    const [idRemover, setIdRemover] = useState()
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/restaurantes');
+        setData(response.data);
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    useEffect(() => {
-        carregarLista();
-    }, [])
+    fetchData();
+  }, []);
 
-    function carregarLista() {
+  const columns = React.useMemo(
+    () => [
+      { Header: 'Nome do Restaurante', accessor: 'nome' },
+      { Header: 'Status', accessor: 'status' },
+      { Header: 'Categoria', accessor: 'categoria' },
+      { Header: 'Chegada', accessor: 'chegada' },
+    ],
+    []
+  );
 
-        axios.get(`http://localhost:8080/restaurantes`)
-            .then((response) => {
-                setLista(response.data)
-            })
-    }
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });
 
-
-
-    return (
-        <div>
-            <div style={{ marginTop: '3%' }}>
-
-                <Container textAlign='justified' >
-
-                    <h2> Empresas parceiras </h2>
-                    <Divider />
-
-                    <div style={{ marginTop: '4%' }}>
-                        <Button
-                            label='Novo'
-                            circular
-                            color='orange'
-                            icon='clipboard outline'
-                            floated='right'
-                            as={Link}
-                            to='/form-cliente'
-                        />
-                        <br /><br /><br />
-
-                        <Table color='orange' sortable celled>
-
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell>Nome</Table.HeaderCell>
-                                    <Table.HeaderCell>Status</Table.HeaderCell>
-                                    <Table.HeaderCell>Categoria</Table.HeaderCell>
-                                    <Table.HeaderCell>Chegada</Table.HeaderCell>
-                                    <Table.HeaderCell textAlign='center'>Ações</Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Header>
-
-                            <Table.Body>
-
-                                {lista.map(cliente => (
-
-                                    <Table.Row key={cliente.id}>
-                                        <Table.Cell>{cliente.nome}</Table.Cell>
-                                        <Table.Cell>{cliente.cpf}</Table.Cell>
-                                        <Table.Cell>{cliente.foneCelular}</Table.Cell>
-                                        <Table.Cell>{cliente.foneFixo}</Table.Cell>
-                                        <Table.Cell textAlign='center'>
-
-                                            <Button
-                                                inverted
-                                                circular
-                                                color='green'
-                                                title='Clique aqui para editar os dados deste cliente'
-                                                icon>
-                                                <Link to="/form-cliente" state={{id: cliente.id}} style={{color: 'green'}}> <Icon name='edit' /> </Link>                                                
-                                            </Button> &nbsp;
-
-                                            <Button
-                                                inverted
-                                                circular
-                                                color='red'
-                                                title='Clique aqui para remover este cliente'
-                                                icon
-                                                onClick={e => (cliente.id)}>
-                                                <Icon name='trash' />
-                                            </Button>
-
-                                        </Table.Cell>
-                                    </Table.Row>
-                                ))}
-
-                            </Table.Body>
-                        </Table>
-                    </div>
-                </Container>
-            </div>
-
-            <Modal
-               basic
-               onClose={() => setOpenModal(false)}
-               onOpen={() => setOpenModal(true)}
-               open={openModal}
-         >
-               <Header icon>
-                   <Icon name='trash' />
-                   <div style={{marginTop: '5%'}}> Tem certeza que deseja remover esse registro? </div>
-               </Header>
-               
-         </Modal>
-
-
-        </div>
-    );
+  return (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="bg-white p-4 rounded shadow-lg w-full max-w-4xl">
+        {loading ? (
+          <p>Carregando...</p>
+        ) : (
+          <table {...getTableProps()} className="w-full">
+            <thead>
+              {headerGroups.map(headerGroup => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map(column => (
+                    <th {...column.getHeaderProps()} className="border-b p-2 text-left" style={{ color: '#1C4F2A' }}>
+                      {column.render('Header')}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {rows.map(row => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map(cell => (
+                      <td {...cell.getCellProps()} className="border-b p-2" style={{ color: '#1C4F2A' }}>
+                        {cell.render('Cell')}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Restaurantes;

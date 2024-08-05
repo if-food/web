@@ -5,9 +5,9 @@ import reportWebVitals from './reportWebVitals';
 import 'tailwindcss/tailwind.css';
 
 import App from './App';
-import Sidebar from './views/Componentes/Sidebar';
 
 
+ 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
