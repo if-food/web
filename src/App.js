@@ -10,8 +10,10 @@ import SenhaAtualizada from './views/login/SenhaAtualizada'
 import CadastroInicial from './views/cadastro/CadastroInicial';
 import ConfirmarCadastro from './views/cadastro/ConfirmarCadastro';
 // import Cadastro from './views/cadastro/Cadastro';
-import Home from './views/Home/Home';
-import Restaurantes from './views/Home/Restaurantes';
+import Home from './views/Admin/Home';
+
+import ListClientes from './views/Admin/ListClientes';
+import ListRestaurantes from './views/Admin/ListRestaurantes';
 
 
 
@@ -36,7 +38,8 @@ function App() {
 
        {/*rotas home*/}
        <Route path='/home' element={< Home/>} />
-       <Route path='/restaurantes' element={< Restaurantes/>} />
+       <Route path='/list-restaurantes' element={< ListRestaurantes/>} />
+       <Route path='/list-clientes' element={< ListClientes/>} />
 
       </Routes>
     </Router>
