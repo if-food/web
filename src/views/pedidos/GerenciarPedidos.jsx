@@ -95,7 +95,7 @@ function GerenciarPedidos() {
                             <span className='font-semibold'>{order.id}</span>
                             <span className='font-semibold'>{order.status === 'Pendente' ? 'Confirme o pedido' : 'Entregar até ' + order.deliveryTime}</span>
                           </div>
-                          <button className={`bg-${order.status === 'Pendente' ? 'orange-500' : order.status === 'Em preparo' ? 'red-600' : 'gray-500'} text-white py-0.5 px-5 w-fit h-fit rounded-full`}>
+                          <button className={`bg-${order.status === 'Pendente' ? 'orange-500' : order.status === 'Em preparo' ? 'red-600' : 'secondary_1'} text-white py-0.5 px-5 w-fit h-fit rounded-full`}>
                             {order.time}
                           </button>
                         </div>
@@ -171,13 +171,13 @@ function GerenciarPedidos() {
                   </>
                 )}
                 {selectedOrder.status === 'Em preparo' && (
-                  <button onClick={dispatchOrder} className='flex items-center font-extrabold text-white text-2xl rounded-2xl px-20 bg-secondary_1 hover:bg-secondary_2'>
+                  <button onClick={dispatchOrder} className='flex items-center font-extrabold text-white text-2xl transition-opacity rounded-2xl px-24 p-3 border-2 bg-secondary_1 hover:bg-secondary_2'>
                     Despachar
                   </button>
                 )}
                 {selectedOrder.status === 'Concluídos' && (
-                  <button onClick={deleteOrder} className='flex items-center font-extrabold text-white text-2xl rounded-2xl px-20 bg-green-500 hover:bg-green-600'>
-                    Excluir
+                  <button onClick={deleteOrder} className='flex items-center font-extrabold text-white text-2xl rounded-2xl transition-opacity px-24 p-3 border-2 bg-green-500 hover:bg-green-600'>
+                    Finalizar
                   </button>
                 )}
               </div>
@@ -189,9 +189,7 @@ function GerenciarPedidos() {
           )}
         </div>
       </div>
-      <footer className="bg-gradient-to-t from-[#1F2026] via-[#1c1918] to-[#37383F] text-secondary_3 py-4 text-center">
-        <p>&copy; 2024 Seu Restaurante. Todos os direitos reservados.</p>
-      </footer>
+     
     </div>
   );
 }

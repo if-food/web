@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import axios from "axios";
-import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import axios from "axios";
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { formSchema } from '../../validation/cadastroValidation';
 
 
 import iffood from "../../assets/iffood.png";
-import imagem1 from "../../assets/imagem1.png";
 
 const Cadastro = () => {
 
@@ -61,7 +60,7 @@ const Cadastro = () => {
                             
                                 <button
                                     type="button"
-                                    class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                    class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ">
                                     Alterar
                                 </button>
                             

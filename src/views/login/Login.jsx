@@ -36,8 +36,9 @@ function Login() {
 
             axios.post("http://localhost:8080/api/auth", authenticationRequest)
                 .then((response) => {
+                    console.log(response.data)
 
-                    registerSuccessfulLoginForJwt(response.data.token, response.data.expiration)
+                    registerSuccessfulLoginForJwt(response.data.token, response.data.tokenExpiresIn)
                     navigate("/home-parceiros");
 
                 })

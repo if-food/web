@@ -1,19 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import 'tailwindcss/tailwind.css';
-import './index.css';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "tailwindcss/tailwind.css";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
 
-import Rotas from './Rotas';
+import Rotas from "./Rotas";
 
-
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <div className=' bg-gradient-to-t from-[#1F2026] via-#1c1918 to-[#37383F]'>
+  <div className=" bg-gradient-to-t from-[#1F2026] via-#1c1918 to-[#37383F]">
     <React.StrictMode>
-      <Rotas/>
+      <Rotas />
     </React.StrictMode>
+    <footer className="bg-gradient-to-t from-[#1F2026] via-[#1c1918] to-[#37383F] text-secondary_3 py-4 text-center">
+      <p>&copy; 2024 Seu Restaurante. Todos os direitos reservados.</p>
+    </footer>
   </div>
 );
 

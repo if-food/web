@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FaDollarSign, FaHandshake, FaHome, FaInfoCircle, FaSignOutAlt, FaUsers } from 'react-icons/fa';
+import { FaDollarSign, FaHandshake, FaHome, FaInfoCircle, FaRegUser, FaSignOutAlt, FaUsers } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../views/util/AuthenticationService';
 
@@ -28,12 +28,15 @@ const Sidebar = () => {
           {isOpen ? '<<' : '>>'}
         </button>
           <div>
-          <Link to="/home-parceiros">
+          <Link to="/home-parceiros" className='visited:text-secondary_1'>
             <SidebarItem icon={<FaHome />} text="Home" isOpen={isOpen}  />
           </Link>
           <SidebarItem icon={<FaUsers />} text="Clientes" isOpen={isOpen} />
           <SidebarItem icon={<FaHandshake />} text="Parceiros" isOpen={isOpen} />
           <SidebarItem icon={<FaDollarSign />} text="Faturamento" isOpen={isOpen} />
+          <Link to="/cadastro" className='visited:text-secondary_1'>
+            <SidebarItem icon={<FaRegUser/>} text="Perfil" isOpen={isOpen} />
+          </Link>
           <SidebarItem icon={<FaInfoCircle />} text="Informações" isOpen={isOpen} />
           </div>
         </div >

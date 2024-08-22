@@ -21,6 +21,7 @@ const cardsData = [
         id: 2,
         image: gerenciePedidos,
         label: 'Card 2',
+        link: "/gerenciar-pedidos",
         highlight: false,
     },
 
@@ -121,10 +122,7 @@ function HomeParceiros() {
                 </div>
             </div>
 
-            {/* Footer */}
-            <footer className="bg-gradient-to-t from-[#1F2026] via-#1c1918 to-[#37383F] text-secondary_3 py-4 text-center">
-                <p>&copy; 2024 Seu Restaurante. Todos os direitos reservados.</p>
-            </footer>
+           
         </div>
     );
 };
