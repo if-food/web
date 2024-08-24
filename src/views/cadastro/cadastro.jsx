@@ -1,11 +1,11 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import axios from "axios";
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { formSchema } from '../../validation/cadastroValidation';
 
 
 import iffood from "../../assets/iffood.png";
+import imagem1 from "../../assets/imagem1.png";
+import { Link } from 'react-router-dom';
 
 const Cadastro = () => {
 
@@ -17,15 +17,7 @@ const Cadastro = () => {
     const [locaisEntrega, setLocaisEntrega] = useState([{ cidade: '' }]);
 
     const onSubmit = data => {
-        axios.post('http://localhost:8080/api/restaurante', data)
-            .then(response => {
-                console.log('Dados enviados com sucesso:', response.data);
-                // Aqui você pode adicionar um redirecionamento ou mostrar uma mensagem de sucesso.
-            })
-            .catch(error => {
-                console.error('Erro ao enviar os dados:', error);
-                // Aqui você pode adicionar um tratamento de erro, como mostrar uma mensagem de erro.
-            });
+        console.log(data);
     };
 
     const adicionarLocalEntrega = () => {
@@ -37,15 +29,14 @@ const Cadastro = () => {
         setLocaisEntrega(novosLocaisEntrega);
     };
 
-
     return (
-        <div className="flex ">
-            <div className="w-screen flex flex-col items-center justify-center">
-                <div className="mb-4 mt-4">
+        <div className="flex">
+            <div className="w-1/2 flex flex-col items-center justify-center">
+                <div className="mb-1">
                     <img
                         src={iffood}
                         alt="If Food Logo"
-                        className="w-52 h-52 object-contain"
+                        className="w-40 h-40 object-contain"
                     />
                 </div>
                 <form onSubmit={handleSubmit(onSubmit)} className="p-1 rounded-lg shadow-lg w-5/6">
@@ -53,14 +44,14 @@ const Cadastro = () => {
 
                     <div class="col-span-full">
                         <label for="photo" class="block text-sm font-medium leading-6 text-white">Adicione uma foto</label>
-                        <div class="mt-1 flex items-center gap-x-3 mb-4">
+                        <div class="mt-1 flex items-center gap-x-3">
                             <svg class="h-24 w-24 text-gray-300" viewBox="0 0 22 22" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd" />
                             </svg>
                             
                                 <button
                                     type="button"
-                                    class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ">
+                                    class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                                     Alterar
                                 </button>
                             
@@ -89,26 +80,26 @@ const Cadastro = () => {
                     <h4 className="text-2xl font-bold mb-6 mt-5 text-white">Informações gerais</h4>
                     <div className="flex space-x-4">
                         <div className="w-1/2 mb-4">
-                            <label className="block text-white mb-2" htmlFor="nomeFantasia">Nome Fantasia</label>
+                            <label className="block text-white mb-2" htmlFor="nomeResponsavel">Responsável</label>
                             <input
-                                {...register('nomeFantasia')}
+                                {...register('nomeResponsavel')}
                                 className="w-full px-3 py-2 border rounded-xl"
                                 placeholder="Insira o nome do responsável"
                                 type="text"
-                                id="nomeFantasia"
+                                id="nomeResponsavel"
                             />
-                            {errors.nomeFantasia && <p className="text-red-500 text-sm">{errors.nomeFantasia.message}</p>}
+                            {errors.nomeResponsavel && <p className="text-red-500 text-sm">{errors.nomeResponsavel.message}</p>}
                         </div>
                         <div className="w-1/2 mb-4">
-                            <label className="block text-white mb-2" htmlFor="razaoSocial">Razão Social</label>
+                            <label className="block text-white mb-2" htmlFor="nomeRestaurante">Nome do restaurante</label>
                             <input
-                                {...register('razaoSocial')}
+                                {...register('nomeRestaurante')}
                                 className="w-full px-3 py-2 border rounded-xl"
                                 placeholder="Insira o nome do restaurante"
                                 type="text"
-                                id="razaoSocial"
+                                id="nomeRestaurante"
                             />
-                            {errors.razaoSocial && <p className="text-red-500 text-sm">{errors.razaoSocial.message}</p>}
+                            {errors.nomeRestaurante && <p className="text-red-500 text-sm">{errors.nomeRestaurante.message}</p>}
                         </div>
                     </div>
 
@@ -125,28 +116,15 @@ const Cadastro = () => {
                             {errors.cnpj && <p className="text-red-500 text-sm">{errors.cnpj.message}</p>}
                         </div>
                         <div className="w-1/2 mb-4">
-                            <label className="block text-white mb-2" htmlFor="categoria">Categoria</label>
-                            <select
-                                {...register('categoria')}
+                            <label className="block text-white mb-2" htmlFor="segmento">Segmento</label>
+                            <input
+                                {...register('segmento')}
                                 className="w-full px-3 py-2 border rounded-xl"
-                                id="categoria"
-                            >
-                                <option value="">Selecione uma categoria</option>
-                                <option value="VEGETARIANO">Vegetariano</option>
-                                <option value="VEGANO">Vegano</option>
-                                <option value="ORGÂNICO">Orgânico</option>
-                                <option value="ITALIANO">Italiano</option>
-                                <option value="CHINÊS">Chinês</option>
-                                <option value="MEXICANO">Mexicano</option>
-                                <option value="JAPONÊS">Japonês</option>
-                                <option value="FRANCÊS">Francês</option>
-                                <option value="SUSHI">Sushi</option>
-                                <option value="PIZZARIA">Pizzaria</option>
-                                <option value="HAMBURGUERIA">Hamburgueria</option>
-                                <option value="CAFETERIA">Cafeteria</option>
-                                <option value="BISTRÔ">Bistrô</option>
-                            </select>
-                            {errors.categoria && <p className="text-red-500 text-sm">{errors.categoria.message}</p>}
+                                placeholder="Insira o segmento do restaurante"
+                                type="text"
+                                id="segmento"
+                            />
+                            {errors.segmento && <p className="text-red-500 text-sm">{errors.segmento.message}</p>}
                         </div>
                     </div>
                     <div className="flex space-x-6">
@@ -177,15 +155,15 @@ const Cadastro = () => {
                     <h4 className="text-2xl font-bold mb-6 mt-5 text-white">Endereço</h4>
                     <div className="flex space-x-4">
                         <div className="w-1/2 mb-4">
-                            <label className="block text-white mb-2" htmlFor="rua">Rua</label>
+                            <label className="block text-white mb-2" htmlFor="logradouro">Logradouro</label>
                             <input
-                                {...register('rua')}
+                                {...register('logradouro')}
                                 className="w-full px-3 py-2 border rounded-xl"
-                                placeholder="Insira o rua"
+                                placeholder="Insira o logradouro"
                                 type="text"
-                                id="rua"
+                                id="logradouro"
                             />
-                            {errors.rua && <p className="text-red-500 text-sm">{errors.rua.message}</p>}
+                            {errors.logradouro && <p className="text-red-500 text-sm">{errors.logradouro.message}</p>}
                         </div>
                         <div className="w-1/2 mb-4">
                             <label className="block text-white mb-2" htmlFor="bairro">Bairro</label>
@@ -225,15 +203,15 @@ const Cadastro = () => {
                     </div>
                     <div className="flex space-x-6">
                         <div className="w-1/2 mb-4">
-                            <label className="block text-white mb-2" htmlFor="estado">Estado</label>
+                            <label className="block text-white mb-2" htmlFor="uf">UF</label>
                             <input
-                                {...register('estado')}
+                                {...register('uf')}
                                 className="w-full px-3 py-2 border rounded-xl"
-                                placeholder="Insira o Estado"
+                                placeholder="Insira o UF"
                                 type="text"
-                                id="estado"
+                                id="uf"
                             />
-                            {errors.estado && <p className="text-red-500 text-sm">{errors.estado.message}</p>}
+                            {errors.uf && <p className="text-red-500 text-sm">{errors.uf.message}</p>}
                         </div>
                         <div className="w-1/2 mb-4">
                             <label className="block text-white mb-2" htmlFor="cep">CEP</label>
@@ -286,11 +264,19 @@ const Cadastro = () => {
                         </button>
                     </div>
 
-                    <button className="w-1/3 bg-secondary_1 text-white font-bold text-xl py-2 rounded-xl hover:bg-secondary_2 mt-5 mb-4">Cadastrar</button>
-                    
+                    <button className="w-1/3 bg-green-500 text-white font-bold text-lg py-2 rounded-xl hover:bg-blue-700 mt-5">Cadastrar</button>
+                    <h6 className="px-2 mt-3 text-white text-xs"><Link to='/' >
+                                <span className=' underline'>Já tem um cadastro? Faça o login</span>
+                            </Link></h6>
                 </form>
             </div>
-            
+            <div className="w-1/2">
+                <img
+                    src={imagem1}
+                    alt="Placeholder"
+                    className="w-full h-full object-cover"
+                />
+            </div>
         </div>
     );
 }
