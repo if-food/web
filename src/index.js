@@ -12,9 +12,9 @@ root.render(
     <React.StrictMode>
       <Rotas />
     </React.StrictMode>
-    <footer className="bg-gradient-to-t from-[#1F2026] via-[#1c1918] to-[#37383F] text-secondary_3 py-4 text-center">
+  {/*  <footer className="bg-gradient-to-t from-[#1F2026] via-[#1c1918] to-[#37383F] text-secondary_3 py-4 text-center">
       <p>&copy; 2024 Seu Restaurante. Todos os direitos reservados.</p>
-    </footer>
+    </footer>*/}  
   </div>
 );
 
