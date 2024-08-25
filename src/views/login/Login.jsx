@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import iffood from "../../assets/iffood.png";
 import { formSchema } from '../../validation/LoginValidation';
-import { registerSuccessfulLoginForJwt } from '../util/AuthenticationService';
+import { registerSuccessfulLoginForJwt, storeRestauranteData } from '../util/AuthenticationService';
 
 
 function Login() {
@@ -39,16 +39,22 @@ function Login() {
                     console.log(response.data)
 
                     registerSuccessfulLoginForJwt(response.data.token, response.data.tokenExpiresIn)
-                    navigate("/home-parceiros");
 
-                })
-                .catch((error) => {
-
-                    //notifyError('Usuário não encontrado')
-                    console.log('Usuário não encontrado')
-                })
-        }
+                    axios.get(`http://localhost:8080/api/restaurante/?usuarioId=${response.data.id}`)
+                    .then((restauranteResponse) => {
+                        
+                        storeRestauranteData(restauranteResponse.data.id, restauranteResponse.data.nomeFantasia);
+                        navigate("/home-parceiros");
+                    })
+                    .catch((error) => {
+                        console.log('Error fetching restaurante data', error);
+                    });
+            })
+            .catch((error) => {
+                console.log('Usuário não encontrado');
+            });
     }
+}
 
 
     return (

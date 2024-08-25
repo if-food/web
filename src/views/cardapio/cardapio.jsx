@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from '../../componentes/Sidebar';
 import { FaSearch, FaChevronDown, FaChevronUp, FaEdit, FaTrashAlt, FaPlus } from 'react-icons/fa';
 import NovaCategoria from './novaCategoria';
 import NovoItem from './novoItem';
+import { getRestauranteId } from '../util/AuthenticationService';
+import axios from 'axios';
 
 const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
 
@@ -14,12 +16,33 @@ function Cardapio() {
     const [currentCategoryForItem, setCurrentCategoryForItem] = useState('');
     const [itemToEdit, setItemToEdit] = useState(null);
     const [expandedCategories, setExpandedCategories] = useState({});
+    const [restauranteId, setRestauranteId] = useState('');
 
-    const handleAddCategory = (categoryName) => {
+    useEffect(() => {
+        const id = getRestauranteId();
+        setRestauranteId(id);
+    }, []);
+
+
+    const handleAddCategory = async (categoryName, description) => {
         if (categoryName) {
-            setCategories({ ...categories, [categoryName]: [] });
-            setSelectedCategory(categoryName);
-            setShowNovaCategoria(false);
+            let categoryRequest = {
+                nome: categoryName,
+                descricao: description,
+            };
+            console.log(categoryRequest);
+            try {
+                const response = await axios.post(`http://localhost:8080/api/categoria_produto/?restauranteId=${restauranteId}`, categoryRequest);
+                console.log(response.data);
+                // Supondo que a resposta contenha a nova categoria adicionada
+                const newCategory = response.data;
+                setCategories({ ...categories, [newCategory.nome]: [] });
+                setSelectedCategory(newCategory.nome);
+                setShowNovaCategoria(false);
+            } catch (error) {
+                console.error('Erro ao adicionar categoria:', error);
+                alert('Erro ao adicionar categoria: ' + error.message);
+            }
         } else {
             alert('Digite um nome para a nova categoria.');
         }

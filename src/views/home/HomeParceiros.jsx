@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaChartLine } from 'react-icons/fa';
 import { IoMdRestaurant } from 'react-icons/io';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,7 @@ import gerencieCardapio from '../../assets/gerencieCardapio.png';
 import gerenciePedidos from '../../assets/gerenciePedidos.png';
 import logo from '../../assets/iffood.png'; // Substitua pelo caminho correto da sua logo
 import Sidebar from '../../componentes/Sidebar';
+import { getRestauranteNomeFantasia } from '../util/AuthenticationService';
 
 
 const cardsData = [
@@ -29,6 +30,13 @@ const cardsData = [
 ];
 
 function HomeParceiros() {
+    const [restauranteNomeFantasia, setRestauranteNomeFantasia] = useState('');
+
+    useEffect(() => {
+        const nomeFantasia = getRestauranteNomeFantasia();
+        setRestauranteNomeFantasia(nomeFantasia);
+    }, []);
+
     return (
         <div className="flex flex-col h-screen">
             <div className="flex flex-1 overflow-hidden ">
@@ -46,7 +54,7 @@ function HomeParceiros() {
                         {/* Welcome Section */}
                         <div className="flex items-center mb-4">
                             <IoMdRestaurant className="text-4xl text-secondary_2" />
-                            <h1 className="text-3xl text-white font-bold ml-4">Bem-vindo, Usuário</h1>
+                            <h1 className="text-3xl text-white font-bold ml-4">Bem-vindo, {restauranteNomeFantasia}</h1>
                         </div>
 
                         {/* Loja Info Section */}
