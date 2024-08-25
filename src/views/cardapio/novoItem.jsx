@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { itemSchema } from '../../validation/ProdutoValidation';
 
-function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
+
+function NovoItem({ onClose, onAddItem, selectedCategoryId,selectedCategoryName, itemToEdit, restauranteId }) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (itemToEdit) {
@@ -24,21 +28,43 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
     setImage(URL.createObjectURL(e.target.files[0]));
   };
 
-  const handleSave = () => {
-    if (!name || !price || !description || !selectedCategory || !image) {
-      alert('Preencha todos os campos e selecione uma imagem.');
-      return;
+  const handleSave = async () => {
+    const newItem = {
+        name,
+        price,
+        description,
+        image
+    };
+
+
+    try {
+        await itemSchema.validate(newItem, { abortEarly: false });
+        setErrors({});
+
+        const response = await axios.post(`http://localhost:8080/api/produto/?restauranteId=${restauranteId}&categoriaId=${selectedCategoryId}`, {
+            titulo: name,
+            descricao: description,
+            imagem: "http://exemplo.com/imagem-pizza-margherita.jpg",
+            valorUnitario: price
+        });
+
+        console.log('Item saved:', response.data); // Log the response data
+
+        onAddItem(response.data);
+        onClose();
+    } catch (err) {
+        if (err.name === 'ValidationError') {
+            const validationErrors = {};
+            err.inner.forEach(error => {
+                validationErrors[error.path] = error.message;
+            });
+            setErrors(validationErrors);
+        } else {
+            console.error('Erro ao salvar item:', err);
+            alert('Erro ao salvar item: ' + err.message);
+        }
     }
-
-    onAddItem({
-      name,
-      price,
-      description,
-      image
-    });
-
-    onClose();
-  };
+};
 
   return (
     <div className="fixed inset-0 bg-opacity-75 flex items-center justify-center">
@@ -48,7 +74,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
             Voltar
           </button>
           <div className="text-right">
-            <p className="font-semibold text-secondary_3_variant">Restaurante Aberto</p>
+            <p className="font-semibold text-secondary_3_variant">Restaurante Aberto {selectedCategoryId} {selectedCategoryName}</p>
             <p className="text-sm text-secondary_2">Dentro do horário programado</p>
           </div>
         </div>
@@ -64,6 +90,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
+          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
         </div>
         <div className="mb-4 flex space-x-4">
           <div className="w-1/3">
@@ -75,6 +102,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
+            {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
           </div>
           <div className="w-2/3">
             <label className="block text-secondary_3_variant">Categoria</label>
@@ -82,7 +110,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
               type="text"
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
               placeholder="Categoria"
-              value={selectedCategory}
+              value={selectedCategoryName}
               readOnly
             />
           </div>
@@ -95,6 +123,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+          {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-secondary_3_variant">Upload de Imagem</label>
@@ -105,6 +134,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
             onChange={handleImageChange}
           />
           {image && <img src={image} alt="Preview" className="mt-2 w-32 h-32 object-cover" />}
+          {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
           <p className="text-sm text-secondary_3_variant mt-2">
             Formatos: JPEG, JPG, PNG<br />
             Peso máximo: 20MB

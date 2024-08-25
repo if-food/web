@@ -9,11 +9,11 @@ import axios from 'axios';
 const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
 
 function Cardapio() {
-    const [categories, setCategories] = useState({});
-    const [selectedCategory, setSelectedCategory] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [showNovaCategoria, setShowNovaCategoria] = useState(false);
-    const [currentCategoryForItem, setCurrentCategoryForItem] = useState('');
+    const [currentCategoryForItem, setCurrentCategoryForItem] = useState({ id: '', nome: '' });
     const [itemToEdit, setItemToEdit] = useState(null);
     const [expandedCategories, setExpandedCategories] = useState({});
     const [restauranteId, setRestauranteId] = useState('');
@@ -21,8 +21,22 @@ function Cardapio() {
     useEffect(() => {
         const id = getRestauranteId();
         setRestauranteId(id);
+        fetchCategories(id);
     }, []);
 
+    const fetchCategories = async (id) => {
+        try {
+            const response = await axios.get(`http://localhost:8080/api/categoria_produto/?restauranteId=${id}`);
+            const categoriesData = response.data.map(category => ({
+                ...category,
+                items: category.items || []
+            }));
+            setCategories(categoriesData);
+        } catch (error) {
+            console.error('Erro ao carregar categorias:', error);
+            alert('Erro ao carregar categorias: ' + error.message);
+        }
+    };
 
     const handleAddCategory = async (categoryName, description) => {
         if (categoryName) {
@@ -34,10 +48,9 @@ function Cardapio() {
             try {
                 const response = await axios.post(`http://localhost:8080/api/categoria_produto/?restauranteId=${restauranteId}`, categoryRequest);
                 console.log(response.data);
-                // Supondo que a resposta contenha a nova categoria adicionada
-                const newCategory = response.data;
-                setCategories({ ...categories, [newCategory.nome]: [] });
-                setSelectedCategory(newCategory.nome);
+                const newCategory = { ...response.data, items: [] };
+                setCategories([...categories, newCategory]);
+                setSelectedCategoryId(newCategory.id);
                 setShowNovaCategoria(false);
             } catch (error) {
                 console.error('Erro ao adicionar categoria:', error);
@@ -49,69 +62,73 @@ function Cardapio() {
     };
 
     const handleAddItem = (item) => {
-        if (currentCategoryForItem) {
-            if (itemToEdit) {
-                // Edit existing item
-                setCategories({
-                    ...categories,
-                    [currentCategoryForItem]: categories[currentCategoryForItem].map(i =>
-                        i.id === itemToEdit.id ? { ...item, id: i.id } : i
-                    )
-                });
-                setItemToEdit(null);
-            } else {
-                // Add new item
-                setCategories({
-                    ...categories,
-                    [currentCategoryForItem]: [
-                        ...categories[currentCategoryForItem],
-                        { ...item, id: generateId() }
-                    ]
-                });
-            }
-            setCurrentCategoryForItem(''); // Reset category for item
+        if (currentCategoryForItem.id) {
+            setCategories(categories.map(category => {
+                if (category.id === currentCategoryForItem.id) {
+                    if (itemToEdit) {
+                        return {
+                            ...category,
+                            items: category.items.map(i => i.id === itemToEdit.id ? { ...item, id: i.id } : i)
+                        };
+                    } else {
+                        return {
+                            ...category,
+                            items: [...category.items, { ...item, id: generateId() }]
+                        };
+                    }
+                }
+                return category;
+            }));
+            setItemToEdit(null);
+            setCurrentCategoryForItem({ id: '', nome: '' });
         } else {
             alert('Selecione uma categoria para adicionar o item.');
         }
     };
 
-    const handleEditItem = (id, category) => {
-        const item = categories[category].find(item => item.id === id);
+    const handleEditItem = (id, categoryId) => {
+        const category = categories.find(cat => cat.id === categoryId);
+        const item = category.items.find(item => item.id === id);
         setItemToEdit(item);
-        setCurrentCategoryForItem(category);
+        setCurrentCategoryForItem({ id: categoryId, nome: category.nome });
     };
 
-    const handleDeleteItem = (id, category) => {
-        const updatedItems = categories[category].filter(item => item.id !== id);
-        setCategories({ ...categories, [category]: updatedItems });
+    const handleDeleteItem = (id, categoryId) => {
+        setCategories(categories.map(category => {
+            if (category.id === categoryId) {
+                return {
+                    ...category,
+                    items: category.items.filter(item => item.id !== id)
+                };
+            }
+            return category;
+        }));
     };
 
-    const handleDeleteCategory = (category) => {
+    const handleDeleteCategory = (categoryId) => {
         if (window.confirm('Tem certeza de que deseja excluir esta categoria?')) {
-            const updatedCategories = { ...categories };
-            delete updatedCategories[category];
-            setCategories(updatedCategories);
-            if (selectedCategory === category) {
-                setSelectedCategory('');
+            setCategories(categories.filter(category => category.id !== categoryId));
+            if (selectedCategoryId === categoryId) {
+                setSelectedCategoryId('');
             }
         }
     };
 
-    const toggleCategoryExpansion = (category) => {
+    const toggleCategoryExpansion = (categoryId) => {
         setExpandedCategories({
             ...expandedCategories,
-            [category]: !expandedCategories[category]
+            [categoryId]: !expandedCategories[categoryId]
         });
+        setSelectedCategoryId(categoryId);
     };
 
-    const handleShowNovoItem = (category) => {
-        setCurrentCategoryForItem(category);
-        setItemToEdit(null); // Clear item to edit
+    const handleShowNovoItem = (categoryId, categoryName) => {
+        setCurrentCategoryForItem({ id: categoryId, nome: categoryName });
+        setItemToEdit(null);
     };
 
-    // Filter categories based on the search term
-    const filteredCategories = Object.keys(categories).filter(cat =>
-        cat.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredCategories = categories.filter(cat =>
+        cat.nome.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -157,24 +174,23 @@ function Cardapio() {
 
                         <div className="flex flex-col overflow-y-auto">
                             {filteredCategories.map(category => (
-                                <div key={category} className="bg-gray-100 p-4 mb-2 rounded-lg">
+                                <div key={category.id} className="bg-gray-100 p-4 mb-2 rounded-lg">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-xl font-bold text-secondary_3">{category}</h3>
+                                        <h3 className="text-xl font-bold text-secondary_3">{category.nome}</h3>
                                         <div>
-                                           
                                             <button
-                                                onClick={() => toggleCategoryExpansion(category)}
+                                                onClick={() => toggleCategoryExpansion(category.id)}
                                                 className="text-secondary_1 hover:text-secondary_2 text-2xl mx-2"
                                             >
-                                                {expandedCategories[category] ? <FaChevronUp /> : <FaChevronDown />}
+                                                {expandedCategories[category.id] ? <FaChevronUp /> : <FaChevronDown />}
                                             </button>
                                         </div>
                                     </div>
 
-                                    {expandedCategories[category] && (
+                                    {expandedCategories[category.id] && (
                                         <div className="mt-4">
                                             <button
-                                                onClick={() => handleShowNovoItem(category)}
+                                                onClick={() => handleShowNovoItem(category.id, category.nome)}
                                                 className="bg-secondary_1 hover:bg-secondary_2 text-white font-bold py-2 px-4 rounded-xl"
                                             >
                                                 <div className='flex '>
@@ -203,7 +219,7 @@ function Cardapio() {
                                                     </tr>
                                                 </thead>
                                                 <tbody className="bg-white text-secondary_1 divide-y divide-secondary_3">
-                                                    {categories[category].map(item => (
+                                                    {category.items.map(item => (
                                                         <tr key={item.id}>
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <img src={item.image} alt={item.name} className="w-16 h-16 object-cover" />
@@ -219,28 +235,25 @@ function Cardapio() {
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                                 <button
-                                                                    onClick={() => handleEditItem(item.id, category)}
+                                                                    onClick={() => handleEditItem(item.id, category.id)}
                                                                     className="text-2xl text-secondary_1 hover:text-secondary_2 mx-2"
                                                                 >
                                                                     <FaEdit />
                                                                 </button>
                                                                 <button
-                                                                    onClick={() => handleDeleteItem(item.id, category)}
+                                                                    onClick={() => handleDeleteItem(item.id, category.id)}
                                                                     className="text-2xl text-atention_02  hover:text-red-400 mx-2"
                                                                 >
                                                                     <FaTrashAlt />
                                                                 </button>
                                                             </td>
-
                                                         </tr>
-
                                                     ))}
-
                                                 </tbody>
                                             </table>
                                             <div className='flex justify-center items-center w-full'>
                                                 <button
-                                                    onClick={() => handleDeleteCategory(category)}
+                                                    onClick={() => handleDeleteCategory(category.id)}
                                                     className="text-atention_02 hover:text-red-400 text-xl m-4"
                                                 >
                                                     <span className='flex justify-center items-center text-lg'>
@@ -257,11 +270,7 @@ function Cardapio() {
                     </div>
                 </div>
             </div>
-
-            <footer className="bg-gradient-to-t from-[#1F2026] via-#1c1918 to-[#37383F] text-secondary_3 py-4 text-center">
-                <p>&copy; 2024 Seu Restaurante. Todos os direitos reservados.</p>
-            </footer>
-
+            
             {showNovaCategoria && (
                 <NovaCategoria
                     onClose={() => setShowNovaCategoria(false)}
@@ -269,11 +278,13 @@ function Cardapio() {
                 />
             )}
 
-            {currentCategoryForItem && (
+            {currentCategoryForItem.id && (
                 <NovoItem
-                    onClose={() => setCurrentCategoryForItem('')}
+                    onClose={() => setCurrentCategoryForItem({ id: '', nome: '' })}
                     onAddItem={handleAddItem}
-                    selectedCategory={currentCategoryForItem}
+                    restauranteId={restauranteId}
+                    selectedCategoryId={currentCategoryForItem.id}
+                    selectedCategoryName={currentCategoryForItem.nome}
                     itemToEdit={itemToEdit}
                 />
             )}
