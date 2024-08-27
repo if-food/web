@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import successImage from "../../assets/Success Illustration.png";
 import mastercardLogo from "../../assets/mastercard.png";
-import Sidebar from "../../componentes/Sidebar";
-
-import useOrderManagement from "../../hooks/useGerenciarPedidos"; // Importe o custom hook
+import Sidebar from "../../componentes/ParceirosSidebar";
+import useOrderManagement from "../../hooks/useGerenciarPedidos";
 
 const GerenciarPedidos = () => {
-
   const navigate = useNavigate();
-  
+  const [searchTerm, setSearchTerm] = useState(""); // Estado para o termo de pesquisa
+
   const {
     orders,
     selectedOrder,
@@ -18,42 +17,47 @@ const GerenciarPedidos = () => {
     cancelOrder,
     dispatchOrder,
     deleteOrder
-  } = useOrderManagement(); // Use o custom hook
+  } = useOrderManagement();
+
+  // Filtrar pedidos com base no termo de pesquisa
+  const filteredOrders = orders.filter(order =>
+    order.id.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col h-screen">
       <div className="flex flex-grow overflow-y-auto">
         <Sidebar className="w-80 min-w-[20rem] flex-shrink-0" />
         <div className="flex flex-col flex-grow mt-5 mb-5">
-          {/* Conteúdo Principal */}
           <div className="relative flex flex-col bg-gray-100 flex-grow overflow-hidden rounded-xl">
             <span className="w-full p-4 mb-10">
               <input
                 className="w-full input-underline bg-gray-100"
                 placeholder="Busque pelo número do pedido"
                 type="text"
+                value={searchTerm} // Valor do input controlado pelo estado
+                onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o termo de pesquisa
               />
             </span>
             <div className="flex flex-col flex-grow overflow-hidden">
               <div className="flex flex-col flex-grow overflow-y-auto">
-                {/* Seções de pedidos */}
                 {["Pendente", "Em preparo", "Concluídos"].map((status) => (
                   <div className="flex flex-col" key={status}>
-                    <div className="flex justify-between items-center bg-gray-300  py-3 px-4">
+                    <div className="flex justify-between items-center bg-gray-300 py-3 px-4">
                       <span className="text-xl font-bold text-secondary_1">
                         {status}
                       </span>
-                      <span className="text-xl font-bold text-secondary_1 ">
-                        {orders.filter((o) => o.status === status).length}
+                      <span className="text-xl font-bold text-secondary_1">
+                        {filteredOrders.filter((o) => o.status === status).length}
                       </span>
                     </div>
                     <div className="flex flex-col text-secondary_1">
-                      {orders
+                      {filteredOrders
                         .filter((o) => o.status === status)
                         .map((order) => (
                           <div
                             key={order.id}
-                            className="cursor-pointer flex justify-between items-center py-3 px-4 border-b-2 border-secondary_3 hover:bg-secondary_2 "
+                            className="cursor-pointer flex justify-between items-center py-3 px-4 border-b-2 border-secondary_3 hover:bg-secondary_2"
                             onClick={() => handleOrderClick(order.id)}
                           >
                             <div className="flex flex-col justify-between">
@@ -84,11 +88,7 @@ const GerenciarPedidos = () => {
             </div>
           </div>
         </div>
-        {/* Conteúdo Adicional no Lado Direito */}
-      {}  <div className="flex flex-col w-9/12 mx-auto mt-3 p-5 gap-10 overflow-y-auto">
-          {/*<div className="bg-blue-600 text-white min-h-48 flex items-center justify-center text-2xl font-bold rounded-2xl">
-           Pedidos
-          </div>*/}
+        <div className="flex flex-col w-9/12 mx-auto mt-3 p-5 gap-10 overflow-y-auto">
           {selectedOrder ? (
             <>
               <div className="flex gap-8 w-full bg-white rounded-md px-8 py-5">
@@ -121,7 +121,7 @@ const GerenciarPedidos = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex  text-secondary_1 flex-col w-full h-fit bg-white rounded-md">
+              <div className="flex text-secondary_1 flex-col w-full h-fit bg-white rounded-md">
                 <div
                   className={`${
                     selectedOrder.status === "Pendente"
@@ -205,15 +205,14 @@ const GerenciarPedidos = () => {
             <div className="flex flex-col items-center justify-center h-full">
               <span className="text-3xl text-secondary_3_variant">
                 Selecione um pedido para ver os detalhes
-              </span>
+             
+            </span>
             </div>
           )}
         </div>
       </div>
-      <footer className="bg-gradient-to-t from-[#1F2026] via-[#1c1918] to-[#37383F] text-secondary_3_variant py-4 text-center">
-        <p>&copy; 2024 Seu Restaurante. Todos os direitos reservados.</p>
-      </footer>
     </div>
+  
   );
 };
 

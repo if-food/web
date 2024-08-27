@@ -18,7 +18,7 @@ const Sidebar = () => {
 
   return (
     <div className={`flex  ${isOpen ? 'w-64' : 'w-18'}  text-secondary_1 abs transition-width duration-300 mx-4 my-4`}>
-      <div className="flex flex-col w-full  rounded-2xl bg-white">
+      <div className="flex flex-col w-full border-2  rounded-2xl bg-white">
         <div className="flex flex-col justify-between border-2 border-secondary_1 h-full rounded-2xl">
         <div >
         <button

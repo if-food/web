@@ -9,7 +9,7 @@ import SenhaAtualizada from './views/login/SenhaAtualizada';
 
 import CadastroInicial from './views/cadastro/CadastroInicial';
 import ConfirmarCadastro from './views/cadastro/ConfirmarCadastro';
-import Cadastro from './views/cadastro/cadastro';
+import Perfil from './views/cadastro/Perfil';
 import NovaCategoria from './views/cardapio/novaCategoria';
 import NovoItem from './views/cardapio/novoItem';
 import HomeParceiros from './views/home/HomeParceiros';
@@ -19,6 +19,7 @@ import ListClientes from './views/Admin/ListClientes';
 import ListRestaurantes from './views/Admin/ListRestaurantes';
 import RestauranteDetalhes from './views/Admin/RestauranteDetalhes';
 import GerenciarPedidos from './views/pedidos/GerenciarPedidos';
+
 
 function Rotas() {
   return (
@@ -35,7 +36,7 @@ function Rotas() {
        
        {/*rotas cadastro*/}
        <Route path='/cadastro-inicial' element={<CadastroInicial />} />
-       <Route path='/cadastro' element={< Cadastro/>} />
+       <Route path='/perfil' element={< Perfil/>} />
        <Route path='/confirmar-cadastro' element={< ConfirmarCadastro/>} />
 
        {/*rotas home*/}
@@ -43,7 +44,7 @@ function Rotas() {
 
        {/*rotas cardapio*/}
        <Route path='novo-item' element={< NovoItem/>} />
-       <Route path='nnnn' element={< NovaCategoria/>} />
+       <Route path='nova-categoria' element={< NovaCategoria/>} />
       
        {/*rotas restaurante*/}
         <Route path='cardapio' element={<Cardapio/>}/> 
@@ -51,6 +52,7 @@ function Rotas() {
         {/*Pedidos*/}
         GerenciarPedidos
         <Route path='gerenciar-pedidos' element={<GerenciarPedidos/>}/> 
+        
 
        {/*rotas admin*/}
         <Route path='list-clientes' element={<ListClientes/>}/> 

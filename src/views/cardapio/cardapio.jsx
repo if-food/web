@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Sidebar from '../../componentes/Sidebar';
+import Sidebar from '../../componentes/ParceirosSidebar';
 import { FaSearch, FaChevronDown, FaChevronUp, FaEdit, FaTrashAlt, FaPlus } from 'react-icons/fa';
 import NovaCategoria from './novaCategoria';
 import NovoItem from './novoItem';
