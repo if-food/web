@@ -23,20 +23,50 @@ function Cardapio() {
         setRestauranteId(id);
         fetchCategories(id);
     }, []);
-
+    
     const fetchCategories = async (id) => {
+        console.time('fetchCategories');
+    
+        const defaultImageUrl = 'path/to/default/image.jpg'; // Path to the default image
+    
         try {
-            const response = await axios.get(`http://localhost:8080/api/categoria_produto/?restauranteId=${id}`);
-            const categoriesData = response.data.map(category => ({
-                ...category,
-                items: category.items || []
+            const response = await axios.get(`http://localhost:8080/api/categoria_produto/cardapio/?restauranteId=${id}`);
+            const categoriesData = await Promise.all(response.data.map(async (category) => {
+                const items = await Promise.all(category.produtos.map(async (produto) => {
+                    let imageUrl = defaultImageUrl;
+    
+                    if (produto.photo) {
+                        const byteArray = typeof produto.photo === 'string' 
+                            ? Uint8Array.from(atob(produto.photo), c => c.charCodeAt(0)) 
+                            : new Uint8Array(produto.photo);
+                        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+                        imageUrl = URL.createObjectURL(blob);
+                    }
+    
+                    return {
+                        id: produto.id,
+                        name: produto.titulo,
+                        description: produto.descricao,
+                        image: imageUrl,
+                        price: produto.valorUnitario
+                    };
+                }));
+    
+                return {
+                    ...category,
+                    items
+                };
             }));
+    
             setCategories(categoriesData);
         } catch (error) {
-            console.error('Erro ao carregar categorias:', error);
-            alert('Erro ao carregar categorias: ' + error.message);
+            console.error('Erro ao carregar categorias:', error.message);
+            alert(`Erro ao carregar categorias: ${error.message}`);
         }
+    
+        console.timeEnd('fetchCategories');
     };
+    
 
     const handleAddCategory = async (categoryName, description) => {
         if (categoryName) {

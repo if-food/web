@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { itemSchema } from '../../validation/ProdutoValidation';
+import { itemSchema } from '../../validation/ProdutoValidation'; // Importe o esquema de validação
 
-
-function NovoItem({ onClose, onAddItem, selectedCategoryId,selectedCategoryName, itemToEdit, restauranteId }) {
+function NovoItem({ onClose, onAddItem, selectedCategoryId, selectedCategoryName, itemToEdit, restauranteId }) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
@@ -15,7 +14,7 @@ function NovoItem({ onClose, onAddItem, selectedCategoryId,selectedCategoryName,
       setName(itemToEdit.name);
       setPrice(itemToEdit.price);
       setDescription(itemToEdit.description);
-      setImage(itemToEdit.image);
+      setImage(itemToEdit.image); // Assume que a imagem é um URL ou similar
     } else {
       setName('');
       setPrice('');
@@ -24,47 +23,63 @@ function NovoItem({ onClose, onAddItem, selectedCategoryId,selectedCategoryName,
     }
   }, [itemToEdit]);
 
+  const validate = async () => {
+    try {
+      await itemSchema.validate({
+        name,
+        price: parseFloat(price),
+        description,
+        image
+      }, { abortEarly: false });
+      setErrors({});
+      return true;
+    } catch (err) {
+      const newErrors = {};
+      err.inner.forEach((error) => {
+        newErrors[error.path] = error.message;
+      });
+      setErrors(newErrors);
+      return false;
+    }
+  };
+
   const handleImageChange = (e) => {
-    setImage(URL.createObjectURL(e.target.files[0]));
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      console.log(selectedFile);
+      console.log(typeof (selectedFile));
+    
+      setImage(selectedFile);
+    }
   };
 
   const handleSave = async () => {
-    const newItem = {
-        name,
-        price,
-        description,
-        image
-    };
-
+    const isValid = await validate();
+    if (!isValid) return;
 
     try {
-        await itemSchema.validate(newItem, { abortEarly: false });
-        setErrors({});
+      const formData = new FormData();
+      formData.append('imageFile', image);
+      formData.append('data', JSON.stringify({
+        titulo: name,
+        descricao: description,
+        valorUnitario: parseFloat(price),
+        restauranteId,
+        categoriaId: selectedCategoryId
+      }));
 
-        const response = await axios.post(`http://localhost:8080/api/produto/?restauranteId=${restauranteId}&categoriaId=${selectedCategoryId}`, {
-            titulo: name,
-            descricao: description,
-            imagem: "http://exemplo.com/imagem-pizza-margherita.jpg",
-            valorUnitario: price
-        });
-
-        console.log('Item saved:', response.data); // Log the response data
-
-        onAddItem(response.data);
-        onClose();
-    } catch (err) {
-        if (err.name === 'ValidationError') {
-            const validationErrors = {};
-            err.inner.forEach(error => {
-                validationErrors[error.path] = error.message;
-            });
-            setErrors(validationErrors);
-        } else {
-            console.error('Erro ao salvar item:', err);
-            alert('Erro ao salvar item: ' + err.message);
+      const response = await axios.postForm('http://localhost:8080/api/produto', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
+      });
+
+      console.log(response.data);
+      if (onAddItem) onAddItem(response.data);
+    } catch (error) {
+      console.error('Error making the request:', error);
     }
-};
+  };
 
   return (
     <div className="fixed inset-0 bg-opacity-75 flex items-center justify-center">
@@ -133,7 +148,7 @@ function NovoItem({ onClose, onAddItem, selectedCategoryId,selectedCategoryName,
             accept=".jpeg, .jpg, .png"
             onChange={handleImageChange}
           />
-          {image && <img src={image} alt="Preview" className="mt-2 w-32 h-32 object-cover" />}
+          {image && <img src={URL.createObjectURL(image)} alt="Preview" className="mt-2 w-32 h-32 object-cover" />}
           {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
           <p className="text-sm text-secondary_3_variant mt-2">
             Formatos: JPEG, JPG, PNG<br />
