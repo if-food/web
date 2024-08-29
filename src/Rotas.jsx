@@ -19,6 +19,7 @@ import ListClientes from './views/Admin/ListClientes';
 import ListRestaurantes from './views/Admin/ListRestaurantes';
 import RestauranteDetalhes from './views/Admin/RestauranteDetalhes';
 import GerenciarPedidos from './views/pedidos/GerenciarPedidos';
+import HistoricoPedidos from './views/pedidos/HistoricoPedidos';
 
 
 function Rotas() {
@@ -52,6 +53,7 @@ function Rotas() {
         {/*Pedidos*/}
         GerenciarPedidos
         <Route path='gerenciar-pedidos' element={<GerenciarPedidos/>}/> 
+        <Route path='historico-pedidos' element={<HistoricoPedidos/>}/> 
         
 
        {/*rotas admin*/}

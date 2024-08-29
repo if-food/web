@@ -3,6 +3,8 @@
     "id": "#6001",
     "status": "Pendente",
     "time": "0 min",
+    "orderDate": "2024-08-29",
+    "orderTime": "13:45",
     "deliveryTime": "14:00",
     "address": "Rua dos Girassóis, 123, Jardim das Flores - São Paulo/SP - CEP 12345-678",
     "items": [
@@ -18,6 +20,8 @@
     "id": "#6002",
     "status": "Pendente",
     "time": "0 min",
+    "orderDate": "2024-08-29",
+    "orderTime": "14:00",
     "deliveryTime": "14:15",
     "address": "Rua das Acácias, 456, Parque do Sol - Rio de Janeiro/RJ - CEP 23456-789",
     "items": [
@@ -33,6 +37,8 @@
     "id": "#6003",
     "status": "Pendente",
     "time": "0 min",
+    "orderDate": "2024-08-29",
+    "orderTime": "14:15",
     "deliveryTime": "14:30",
     "address": "Avenida das Palmeiras, 789, Centro - Belo Horizonte/MG - CEP 34567-890",
     "items": [
@@ -52,6 +58,8 @@
     "id": "#6004",
     "status": "Pendente",
     "time": "0 min",
+    "orderDate": "2024-08-29",
+    "orderTime": "14:30",
     "deliveryTime": "14:45",
     "address": "Rua dos Cedros, 101, Vila Nova - Curitiba/PR - CEP 45678-901",
     "items": [
@@ -75,6 +83,8 @@
     "id": "#6005",
     "status": "Pendente",
     "time": "0 min",
+    "orderDate": "2024-08-29",
+    "orderTime": "14:45",
     "deliveryTime": "15:00",
     "address": "Rua das Orquídeas, 202, Jardim das Acácias - Porto Alegre/RS - CEP 56789-012",
     "items": [
@@ -90,6 +100,8 @@
     "id": "#6006",
     "status": "Em preparo",
     "time": "10 min",
+    "orderDate": "2024-08-29",
+    "orderTime": "15:00",
     "deliveryTime": "15:30",
     "address": "Rua dos Eucaliptos, 303, Vila dos Pássaros - Salvador/BA - CEP 67890-123",
     "items": [
@@ -109,6 +121,8 @@
     "id": "#6007",
     "status": "Em preparo",
     "time": "10 min",
+    "orderDate": "29/08/2024",
+    "orderTime": "15:15",
     "deliveryTime": "15:45",
     "address": "Rua dos Pinheiros, 404, Alto da Boa Vista - Recife/PE - CEP 78901-234",
     "items": [
@@ -124,11 +138,12 @@
     "subtotal": "R$ 41,98",
     "paymentMethod": "Pagamento na entrega"
   },
-  
   {
     "id": "#6011",
     "status": "Concluídos",
     "time": "20 min",
+    "orderDate": "2024-08-29",
+    "orderTime": "16:40",
     "deliveryTime": "17:00",
     "address": "Rua das Palmeiras, 1010, Jardim dos Lagos - São Paulo/SP - CEP 78901-234",
     "items": [
@@ -148,6 +163,8 @@
     "id": "#6012",
     "status": "Concluídos",
     "time": "20 min",
+    "orderDate": "2024-08-29",
+    "orderTime": "16:55",
     "deliveryTime": "17:15",
     "address": "Rua das Acácias, 2020, Vila Nova - Rio de Janeiro/RJ - CEP 89012-345",
     "items": [
