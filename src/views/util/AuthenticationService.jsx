@@ -2,6 +2,8 @@ import axios from 'axios';
 
 export const TOKEN_SESSION_ATTRIBUTE_NAME = 'token'
 export const EXPIRATION_SESSION_ATTRIBUTE_NAME = 'expiration'
+export const RESTAURANTE_ID_ATTRIBUTE_NAME = 'restauranteId';
+export const RESTAURANTE_NOME_FANTASIA_ATTRIBUTE_NAME = 'restauranteNomeFantasia';
 
 export const registerSuccessfulLoginForJwt = (token, expiration) => {
 
@@ -54,4 +56,17 @@ export const logout = () => {
     if (token === null) return ''
     return token
  }
+
+ export const storeRestauranteData = (restauranteId, restauranteNomeFantasia) => {
+   localStorage.setItem(RESTAURANTE_ID_ATTRIBUTE_NAME, restauranteId);
+   localStorage.setItem(RESTAURANTE_NOME_FANTASIA_ATTRIBUTE_NAME, restauranteNomeFantasia);
+};
+
+export const getRestauranteId = () => {
+   return localStorage.getItem(RESTAURANTE_ID_ATTRIBUTE_NAME);
+};
+
+export const getRestauranteNomeFantasia = () => {
+   return localStorage.getItem(RESTAURANTE_NOME_FANTASIA_ATTRIBUTE_NAME);
+};
  

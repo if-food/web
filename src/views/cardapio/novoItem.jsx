@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { itemSchema } from '../../validation/ProdutoValidation'; // Importe o esquema de validação
 
-function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
+function NovoItem({ onClose, onAddItem, selectedCategoryId, selectedCategoryName, itemToEdit, restauranteId }) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (itemToEdit) {
       setName(itemToEdit.name);
       setPrice(itemToEdit.price);
       setDescription(itemToEdit.description);
-      setImage(itemToEdit.image);
+      setImage(itemToEdit.image); // Assume que a imagem é um URL ou similar
     } else {
       setName('');
       setPrice('');
@@ -20,24 +23,62 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
     }
   }, [itemToEdit]);
 
-  const handleImageChange = (e) => {
-    setImage(URL.createObjectURL(e.target.files[0]));
+  const validate = async () => {
+    try {
+      await itemSchema.validate({
+        name,
+        price: parseFloat(price),
+        description,
+        image
+      }, { abortEarly: false });
+      setErrors({});
+      return true;
+    } catch (err) {
+      const newErrors = {};
+      err.inner.forEach((error) => {
+        newErrors[error.path] = error.message;
+      });
+      setErrors(newErrors);
+      return false;
+    }
   };
 
-  const handleSave = () => {
-    if (!name || !price || !description || !selectedCategory || !image) {
-      alert('Preencha todos os campos e selecione uma imagem.');
-      return;
+  const handleImageChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      console.log(selectedFile);
+      console.log(typeof (selectedFile));
+    
+      setImage(selectedFile);
     }
+  };
 
-    onAddItem({
-      name,
-      price,
-      description,
-      image
-    });
+  const handleSave = async () => {
+    const isValid = await validate();
+    if (!isValid) return;
 
-    onClose();
+    try {
+      const formData = new FormData();
+      formData.append('imageFile', image);
+      formData.append('data', JSON.stringify({
+        titulo: name,
+        descricao: description,
+        valorUnitario: parseFloat(price),
+        restauranteId,
+        categoriaId: selectedCategoryId
+      }));
+
+      const response = await axios.postForm('http://localhost:8080/api/produto', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      console.log(response.data);
+      if (onAddItem) onAddItem(response.data);
+    } catch (error) {
+      console.error('Error making the request:', error);
+    }
   };
 
   return (
@@ -48,7 +89,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
             Voltar
           </button>
           <div className="text-right">
-            <p className="font-semibold text-secondary_3_variant">Restaurante Aberto</p>
+            <p className="font-semibold text-secondary_3_variant">Restaurante Aberto {selectedCategoryId} {selectedCategoryName}</p>
             <p className="text-sm text-secondary_2">Dentro do horário programado</p>
           </div>
         </div>
@@ -64,6 +105,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
+          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
         </div>
         <div className="mb-4 flex space-x-4">
           <div className="w-1/3">
@@ -75,6 +117,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
+            {errors.price && <p className="text-red-500 text-sm">{errors.price}</p>}
           </div>
           <div className="w-2/3">
             <label className="block text-secondary_3_variant">Categoria</label>
@@ -82,7 +125,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
               type="text"
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
               placeholder="Categoria"
-              value={selectedCategory}
+              value={selectedCategoryName}
               readOnly
             />
           </div>
@@ -95,6 +138,7 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+          {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
         </div>
         <div className="mb-4">
           <label className="block text-secondary_3_variant">Upload de Imagem</label>
@@ -104,7 +148,8 @@ function NovoItem({ onClose, onAddItem, selectedCategory, itemToEdit }) {
             accept=".jpeg, .jpg, .png"
             onChange={handleImageChange}
           />
-          {image && <img src={image} alt="Preview" className="mt-2 w-32 h-32 object-cover" />}
+          {image && <img src={URL.createObjectURL(image)} alt="Preview" className="mt-2 w-32 h-32 object-cover" />}
+          {errors.image && <p className="text-red-500 text-sm">{errors.image}</p>}
           <p className="text-sm text-secondary_3_variant mt-2">
             Formatos: JPEG, JPG, PNG<br />
             Peso máximo: 20MB

@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
+import { categorySchema } from '../../validation/categoriaValidation';
 
 function NovaCategoria({ onClose, onAddCategory }) {
   const [categoryName, setCategoryName] = useState('');
   const [description, setDescription] = useState('');
+  const [errors, setErrors] = useState({});
 
-  const handleCreateCategory = () => {
-    if (categoryName) {
-      onAddCategory(categoryName);  // Adiciona a nova categoria
-    } else {
-      alert('Digite um nome para a nova categoria.');
+  const handleCreateCategory = async () => {
+ 
+    try {
+      await categorySchema.validate({ categoryName, description }, { abortEarly: false });
+      onAddCategory(categoryName, description );  // Adiciona a nova categoria
+    } catch (err) {
+      const validationErrors = {};
+      err.inner.forEach((error) => {
+        validationErrors[error.path] = error.message;
+      });
+      setErrors(validationErrors);
     }
   };
 
@@ -37,6 +45,7 @@ function NovaCategoria({ onClose, onAddCategory }) {
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             placeholder="Nome da Categoria"
           />
+          {errors.categoryName && <p className="text-red-500 text-sm">{errors.categoryName}</p>}
         </div>
         
         <div className="mb-4">
@@ -47,6 +56,7 @@ function NovaCategoria({ onClose, onAddCategory }) {
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             placeholder="Descrição"
           />
+          {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
         </div>
        
         <div className="flex justify-end mt-6">

@@ -5,53 +5,37 @@ import { Link } from 'react-router-dom';
 import '../../../src/index.css';
 import gerencieCardapio from '../../assets/gerencieCardapio.png';
 import gerenciePedidos from '../../assets/gerenciePedidos.png';
-import logo from '../../assets/iffood.png'; 
-import Sidebar from '../../componentes/ParceirosSidebar';
-import orders from '../../data/orders.json'; // Supondo que o JSON esteja nessa localização
+import logo from '../../assets/iffood.png'; // Substitua pelo caminho correto da sua logo
+import Sidebar from '../../componentes/Sidebar';
+import { getRestauranteNomeFantasia } from '../util/AuthenticationService';
 
-const HomeParceiros = () => {
-    const [totalPedidos, setTotalPedidos] = useState(0);
-    const [ticketMedio, setTicketMedio] = useState('R$ 0,00');
-    const [totalVendas, setTotalVendas] = useState(0);
-    const [valorTotal, setValorTotal] = useState('R$ 0,00');
+
+const cardsData = [
+    {
+        id: 1,
+        image: gerencieCardapio,
+        label: 'Destaque',
+        link: "/cardapio",
+        highlight: false,
+    },
+    {
+        id: 2,
+        image: gerenciePedidos,
+        label: 'Card 2',
+        link: "/gerenciar-pedidos",
+        highlight: false,
+    },
+
+
+];
+
+function HomeParceiros() {
+    const [restauranteNomeFantasia, setRestauranteNomeFantasia] = useState('');
 
     useEffect(() => {
-        const totalPedidos = orders.length;
-
-        const valorTotal = orders.reduce((acc, order) => {
-            return acc + parseFloat(order.subtotal.replace('R$ ', '').replace(',', '.'));
-        }, 0);
-
-        const totalItensVendidos = orders.reduce((acc, order) => {
-            return acc + order.items.length;
-        }, 0);
-
-        const ticketMedio = valorTotal / totalPedidos;
-
-        setTotalPedidos(totalPedidos);
-        setTicketMedio(`R$ ${ticketMedio.toFixed(2).replace('.', ',')}`);
-        setTotalVendas(totalItensVendidos);
-        setValorTotal(`R$ ${valorTotal.toFixed(2).replace('.', ',')}`);
+        const nomeFantasia = getRestauranteNomeFantasia();
+        setRestauranteNomeFantasia(nomeFantasia);
     }, []);
-
-    // Definição dos dados dos cards
-    const cardsData = [
-        {
-            id: 1,
-            label: '',
-            image: gerencieCardapio,
-            link: '/cardapio',
-            highlight: true,
-        },
-        {
-            id: 2,
-            label: '',
-            image: gerenciePedidos,
-            link: '/gerenciar-pedidos',
-            highlight: true,
-        },
-        // Adicione mais cards conforme necessário
-    ];
 
     return (
         <div className="flex flex-col h-screen">
@@ -66,7 +50,7 @@ const HomeParceiros = () => {
                     <div className="flex-1 p-6 overflow-auto">
                         <div className="flex items-center mb-4">
                             <IoMdRestaurant className="text-4xl text-secondary_2" />
-                            <h1 className="text-3xl text-white font-bold ml-4">Bem-vindo, Usuário</h1>
+                            <h1 className="text-3xl text-white font-bold ml-4">Bem-vindo, {restauranteNomeFantasia}</h1>
                         </div>
 
                         <div className="flex flex-col bg-white p-6 rounded-lg w-full mb-4 text-secondary_1">
