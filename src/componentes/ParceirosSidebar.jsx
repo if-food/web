@@ -72,8 +72,8 @@ const Sidebar = () => {
                 icon={<FaHistory className='text-2xl' />}
                 text="Histórico"
                 isOpen={isOpen}
-                isActive={activeItem === '/historico'}
-                onClick={() => handleClick('/historico')}
+                isActive={activeItem === '/historico-pedidos'}
+                onClick={() => handleClick('/historico-pedidos')}
               />
             </div>
           </div>

@@ -6,7 +6,8 @@ import '../../../src/index.css';
 import gerencieCardapio from '../../assets/gerencieCardapio.png';
 import gerenciePedidos from '../../assets/gerenciePedidos.png';
 import logo from '../../assets/iffood.png'; // Substitua pelo caminho correto da sua logo
-import Sidebar from '../../componentes/Sidebar';
+import Sidebar from '../../componentes/ParceirosSidebar';
+import orders from '../../data/orders.json'; // Supondo que o JSON esteja nessa localização
 import { getRestauranteNomeFantasia } from '../util/AuthenticationService';
 
 
@@ -30,6 +31,31 @@ const cardsData = [
 ];
 
 function HomeParceiros() {
+
+    const [totalPedidos, setTotalPedidos] = useState(0);
+    const [ticketMedio, setTicketMedio] = useState('R$ 0,00');
+    const [totalVendas, setTotalVendas] = useState(0);
+    const [valorTotal, setValorTotal] = useState('R$ 0,00');
+
+    useEffect(() => {
+        const totalPedidos = orders.length;
+
+        const valorTotal = orders.reduce((acc, order) => {
+            return acc + parseFloat(order.subtotal.replace('R$ ', '').replace(',', '.'));
+        }, 0);
+
+        const totalItensVendidos = orders.reduce((acc, order) => {
+            return acc + order.items.length;
+        }, 0);
+
+        const ticketMedio = valorTotal / totalPedidos;
+
+        setTotalPedidos(totalPedidos);
+        setTicketMedio(`R$ ${ticketMedio.toFixed(2).replace('.', ',')}`);
+        setTotalVendas(totalItensVendidos);
+        setValorTotal(`R$ ${valorTotal.toFixed(2).replace('.', ',')}`);
+    }, []);
+
     const [restauranteNomeFantasia, setRestauranteNomeFantasia] = useState('');
 
     useEffect(() => {
