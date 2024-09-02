@@ -37,7 +37,7 @@ const PesquisaPedidos = () => {
         <Sidebar />
         <div className="flex-1 flex flex-col m-8 ">
           <div className="flex justify-around text-secondary_3_variant text-xl font-bold mb-8">
-            <label className="flex flex-col">
+            <label className="flex flex-col items-center">
               Data Início:
               <input
                 type="date"
@@ -47,7 +47,7 @@ const PesquisaPedidos = () => {
               />
             </label>
 
-            <label className="flex flex-col ml-4">
+            <label className="flex items-center flex-col ml-4">
               Data Fim:
               <input
                 type="date"
@@ -57,7 +57,7 @@ const PesquisaPedidos = () => {
               />
             </label>
 
-            <label className="flex flex-col ml-4">
+            <label className="flex items-center flex-col ml-4">
               Status:
               <select
                 value={statusFilter}
@@ -71,7 +71,7 @@ const PesquisaPedidos = () => {
               </select>
             </label>
 
-            <label className="flex flex-col ml-4">
+            <label className="flex items-center flex-col ml-4">
               Código do Pedido:
               <input
                 type="text"
