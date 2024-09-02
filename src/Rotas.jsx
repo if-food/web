@@ -21,6 +21,8 @@ import RestauranteDetalhes from './views/Admin/RestauranteDetalhes';
 import GerenciarPedidos from './views/pedidos/GerenciarPedidos';
 import HistoricoPedidos from './views/pedidos/HistoricoPedidos';
 
+import HomeAdmin from '../src/views/Admin/Home'
+
 
 function Rotas() {
   return (
@@ -57,6 +59,7 @@ function Rotas() {
         
 
        {/*rotas admin*/}
+        <Route path='home' element={<HomeAdmin/>}/> 
         <Route path='list-clientes' element={<ListClientes/>}/> 
         <Route path='list-restaurantes' element={<ListRestaurantes/>}/> 
         <Route path="restaurante-detalhes/:id" element={< RestauranteDetalhes/>} />

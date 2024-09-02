@@ -16,12 +16,13 @@ function CadastroInicial() {
     const [password, setPassword] = useState('');
     const [categoria, setCategoria] = useState('');
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, formState: { errors } } = useForm({
         resolver: yupResolver(formSchema),
     });
 
     const navigate = useNavigate();
 
+ 
     useEffect(() => {
         if (state != null && state.id != null) {
             axios.get(`http://localhost:8080/api/restaurante/${state.id}`)
@@ -72,13 +73,20 @@ function CadastroInicial() {
         }
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        cadastrar();
+        navigate('/confirmar-cadastro');
+    };
+
+
     return (
         <div className="flex h-screen">
             <div className="w-1/2 flex flex-col items-center justify-center">
                 <div className="mb-8">
                     <img src={iffood} alt="If Food Logo" className="w-40 h-40 object-contain" />
                 </div>
-                <form onSubmit={handleSubmit(cadastrar)} className="bg-white p-10 rounded-lg shadow-lg w-5/6">
+                <form onSubmit={handleSubmit} className="bg-white p-10 rounded-lg shadow-lg w-5/6">
                     <h2 className="text-2xl font-bold mb-6">Cadastro</h2>
 
                     <div className="mb-4">

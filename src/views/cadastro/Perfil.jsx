@@ -1,9 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from "axios";
-import React, { useState } from 'react';
+import React, { useState, useEffect, useLocation } from 'react';
 import { useForm } from 'react-hook-form';
 import { formSchema } from '../../validation/cadastroValidation';
 import ParceirosSidebar from '../../componentes/ParceirosSidebar';
+
 import iffood from "../../assets/iffood.png";
 
 const Cadastro = () => {
@@ -17,6 +18,7 @@ const Cadastro = () => {
     const onSubmit = data => {
         axios.post('http://localhost:8080/api/restaurante', data)
             .then(response => {
+                console.log(response.data)
                 console.log('Dados enviados com sucesso:', response.data);
             })
             .catch(error => {

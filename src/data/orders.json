@@ -1,187 +1,318 @@
 [
-  {
-    "id": "#6001",
-    "status": "Pendente",
-    "time": "0 min",
-    "orderDate": "2024-08-29",
-    "orderTime": "13:45",
-    "deliveryTime": "14:00",
-    "address": "Rua dos Girassóis, 123, Jardim das Flores - São Paulo/SP - CEP 12345-678",
-    "items": [
-      {
-        "name": "Saint Peter ao Molho de Limão Siciliano",
-        "price": "R$ 32,99"
-      }
-    ],
-    "subtotal": "R$ 32,99",
-    "paymentMethod": "Pagamento pelo aplicativo (online)"
-  },
-  {
-    "id": "#6002",
-    "status": "Pendente",
-    "time": "0 min",
-    "orderDate": "2024-08-29",
-    "orderTime": "14:00",
-    "deliveryTime": "14:15",
-    "address": "Rua das Acácias, 456, Parque do Sol - Rio de Janeiro/RJ - CEP 23456-789",
-    "items": [
-      {
-        "name": "Peito de Frango ao Molho de Mostarda e Mel",
-        "price": "R$ 28,99"
-      }
-    ],
-    "subtotal": "R$ 28,99",
-    "paymentMethod": "Pagamento pelo aplicativo (online)"
-  },
-  {
-    "id": "#6003",
-    "status": "Pendente",
-    "time": "0 min",
-    "orderDate": "2024-08-29",
-    "orderTime": "14:15",
-    "deliveryTime": "14:30",
-    "address": "Avenida das Palmeiras, 789, Centro - Belo Horizonte/MG - CEP 34567-890",
-    "items": [
-      {
-        "name": "Salmão ao Molho de Maracujá com Risoto de Cogumelos",
-        "price": "R$ 34,99"
-      },
-      {
-        "name": "Bruschetta de Tomate e Manjericão",
-        "price": "R$ 15,99"
-      }
-    ],
-    "subtotal": "R$ 50,98",
-    "paymentMethod": "Pagamento pelo aplicativo (online)"
-  },
-  {
-    "id": "#6004",
-    "status": "Pendente",
-    "time": "0 min",
-    "orderDate": "2024-08-29",
-    "orderTime": "14:30",
-    "deliveryTime": "14:45",
-    "address": "Rua dos Cedros, 101, Vila Nova - Curitiba/PR - CEP 45678-901",
-    "items": [
-      {
-        "name": "Filet Mignon ao Molho de Vinho Tinto",
-        "price": "R$ 39,99"
-      },
-      {
-        "name": "Batatas Rústicas",
-        "price": "R$ 12,99"
-      },
-      {
-        "name": "Salada Caesar",
-        "price": "R$ 18,99"
-      }
-    ],
-    "subtotal": "R$ 71,97",
-    "paymentMethod": "Pagamento pelo aplicativo (online)"
-  },
-  {
-    "id": "#6005",
-    "status": "Pendente",
-    "time": "0 min",
-    "orderDate": "2024-08-29",
-    "orderTime": "14:45",
-    "deliveryTime": "15:00",
-    "address": "Rua das Orquídeas, 202, Jardim das Acácias - Porto Alegre/RS - CEP 56789-012",
-    "items": [
-      {
-        "name": "Linguine ao Molho de Tomate e Manjericão com Camarões",
-        "price": "R$ 29,99"
-      }
-    ],
-    "subtotal": "R$ 29,99",
-    "paymentMethod": "Pagamento pelo aplicativo (online)"
-  },
-  {
-    "id": "#6006",
-    "status": "Em preparo",
-    "time": "10 min",
-    "orderDate": "2024-08-29",
-    "orderTime": "15:00",
-    "deliveryTime": "15:30",
-    "address": "Rua dos Eucaliptos, 303, Vila dos Pássaros - Salvador/BA - CEP 67890-123",
-    "items": [
-      {
-        "name": "Saint Peter ao Molho de Limão Siciliano",
-        "price": "R$ 32,99"
-      },
-      {
-        "name": "Arroz Basmati",
-        "price": "R$ 9,99"
-      }
-    ],
-    "subtotal": "R$ 42,98",
-    "paymentMethod": "Pagamento na entrega"
-  },
-  {
-    "id": "#6007",
-    "status": "Em preparo",
-    "time": "10 min",
-    "orderDate": "29/08/2024",
-    "orderTime": "15:15",
-    "deliveryTime": "15:45",
-    "address": "Rua dos Pinheiros, 404, Alto da Boa Vista - Recife/PE - CEP 78901-234",
-    "items": [
-      {
-        "name": "Peito de Frango ao Molho de Mostarda e Mel",
-        "price": "R$ 28,99"
-      },
-      {
-        "name": "Batatas Rústicas",
-        "price": "R$ 12,99"
-      }
-    ],
-    "subtotal": "R$ 41,98",
-    "paymentMethod": "Pagamento na entrega"
-  },
-  {
-    "id": "#6011",
-    "status": "Concluídos",
-    "time": "20 min",
-    "orderDate": "2024-08-29",
-    "orderTime": "16:40",
-    "deliveryTime": "17:00",
-    "address": "Rua das Palmeiras, 1010, Jardim dos Lagos - São Paulo/SP - CEP 78901-234",
-    "items": [
-      {
-        "name": "Saint Peter ao Molho de Limão Siciliano",
-        "price": "R$ 32,99"
-      },
-      {
-        "name": "Puré de Batata",
-        "price": "R$ 8,99"
-      }
-    ],
-    "subtotal": "R$ 41,98",
-    "paymentMethod": "Pagamento na entrega"
-  },
-  {
-    "id": "#6012",
-    "status": "Concluídos",
-    "time": "20 min",
-    "orderDate": "2024-08-29",
-    "orderTime": "16:55",
-    "deliveryTime": "17:15",
-    "address": "Rua das Acácias, 2020, Vila Nova - Rio de Janeiro/RJ - CEP 89012-345",
-    "items": [
-      {
-        "name": "Peito de Frango ao Molho de Mostarda e Mel",
-        "price": "R$ 28,99"
-      },
-      {
-        "name": "Arroz Pilaf",
-        "price": "R$ 10,99"
-      },
-      {
-        "name": "Salada Grega",
-        "price": "R$ 15,99"
-      }
-    ],
-    "subtotal": "R$ 55,97",
-    "paymentMethod": "Pagamento na entrega"
-  }
-]
+    {
+      "id": "#6100",
+      "status": "Concluídos",
+      "time": "30 min",
+      "orderDate": "01/09/2024",
+      "orderTime": "18:30",
+      "deliveryTime": "19:00",
+      "address": "Av. das Palmeiras, 1000, Centro - Rio de Janeiro/RJ - CEP 22041-001",
+      "items": [
+        { "name": "Pizza Margherita", "price": "R$ 45,00" },
+        { "name": "Refrigerante 2L", "price": "R$ 10,00" }
+      ],
+      "subtotal": "R$ 55,00",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6101",
+      "status": "Pendente",
+      "time": "15 min",
+      "orderDate": "01/09/2024",
+      "orderTime": "12:00",
+      "deliveryTime": "",
+      "address": "Rua das Flores, 150, Jardim Botânico - Curitiba/PR - CEP 80540-340",
+      "items": [
+        { "name": "Hambúrguer Artesanal", "price": "R$ 28,50" },
+        { "name": "Batata Frita", "price": "R$ 12,00" }
+      ],
+      "subtotal": "R$ 40,50",
+      "paymentMethod": "Pagamento na entrega"
+    },
+    {
+      "id": "#6102",
+      "status": "Em preparo",
+      "time": "20 min",
+      "orderDate": "31/08/2024",
+      "orderTime": "19:45",
+      "deliveryTime": "",
+      "address": "Av. Paulista, 1234, Bela Vista - São Paulo/SP - CEP 01310-100",
+      "items": [
+        { "name": "Sushi Combo", "price": "R$ 69,90" },
+        { "name": "Temaki Salmão", "price": "R$ 19,90" }
+      ],
+      "subtotal": "R$ 89,80",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6103",
+      "status": "Concluídos",
+      "time": "25 min",
+      "orderDate": "31/08/2024",
+      "orderTime": "13:15",
+      "deliveryTime": "13:40",
+      "address": "Rua dos Jacarandás, 700, Pinheiros - São Paulo/SP - CEP 05423-012",
+      "items": [
+        { "name": "Lasagna Bolonhesa", "price": "R$ 34,90" },
+        { "name": "Suco de Laranja", "price": "R$ 9,00" }
+      ],
+      "subtotal": "R$ 43,90",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6104",
+      "status": "Em preparo",
+      "time": "40 min",
+      "orderDate": "30/08/2024",
+      "orderTime": "20:00",
+      "deliveryTime": "",
+      "address": "Rua das Acácias, 800, Lagoa - Rio de Janeiro/RJ - CEP 22471-000",
+      "items": [
+        { "name": "Risotto de Camarão", "price": "R$ 58,90" },
+        { "name": "Vinho Branco", "price": "R$ 79,90" }
+      ],
+      "subtotal": "R$ 138,80",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6105",
+      "status": "Concluídos",
+      "time": "35 min",
+      "orderDate": "29/08/2024",
+      "orderTime": "21:00",
+      "deliveryTime": "21:35",
+      "address": "Av. dos Andradas, 500, Centro - Belo Horizonte/MG - CEP 30120-010",
+      "items": [
+        { "name": "Bife à Parmegiana", "price": "R$ 39,90" },
+        { "name": "Arroz Branco", "price": "R$ 8,00" }
+      ],
+      "subtotal": "R$ 47,90",
+      "paymentMethod": "Pagamento na entrega"
+    },
+    {
+      "id": "#6106",
+      "status": "Pendente",
+      "time": "10 min",
+      "orderDate": "28/08/2024",
+      "orderTime": "17:50",
+      "deliveryTime": "",
+      "address": "Rua dos Pinheiros, 320, Perdizes - São Paulo/SP - CEP 05020-002",
+      "items": [
+        { "name": "Salada Caprese", "price": "R$ 22,50" },
+        { "name": "Água Mineral", "price": "R$ 4,00" }
+      ],
+      "subtotal": "R$ 26,50",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6107",
+      "status": "Em preparo",
+      "time": "30 min",
+      "orderDate": "28/08/2024",
+      "orderTime": "20:30",
+      "deliveryTime": "",
+      "address": "Rua das Rosas, 456, Jabaquara - São Paulo/SP - CEP 04347-000",
+      "items": [
+        { "name": "Spaghetti Carbonara", "price": "R$ 29,90" },
+        { "name": "Pão de Alho", "price": "R$ 7,50" }
+      ],
+      "subtotal": "R$ 37,40",
+      "paymentMethod": "Pagamento na entrega"
+    },
+    {
+      "id": "#6108",
+      "status": "Concluídos",
+      "time": "20 min",
+      "orderDate": "27/08/2024",
+      "orderTime": "13:00",
+      "deliveryTime": "13:20",
+      "address": "Rua das Hortênsias, 78, Jardins - São Paulo/SP - CEP 01419-001",
+      "items": [
+        { "name": "Frango Grelhado com Legumes", "price": "R$ 32,90" },
+        { "name": "Salada Mista", "price": "R$ 18,00" }
+      ],
+      "subtotal": "R$ 50,90",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6109",
+      "status": "Pendente",
+      "time": "5 min",
+      "orderDate": "27/08/2024",
+      "orderTime": "11:30",
+      "deliveryTime": "",
+      "address": "Av. dos Estados, 1345, Industrial - Santo André/SP - CEP 09210-580",
+      "items": [
+        { "name": "Wrap de Frango", "price": "R$ 25,00" },
+        { "name": "Smoothie de Morango", "price": "R$ 15,00" }
+      ],
+      "subtotal": "R$ 40,00",
+      "paymentMethod": "Pagamento na entrega"
+    },
+    {
+      "id": "#6110",
+      "status": "Concluídos",
+      "time": "40 min",
+      "orderDate": "26/08/2024",
+      "orderTime": "18:00",
+      "deliveryTime": "18:40",
+      "address": "Rua das Magnólias, 90, Tatuapé - São Paulo/SP - CEP 03311-000",
+      "items": [
+        { "name": "Yakissoba de Carne", "price": "R$ 35,00" },
+        { "name": "Refrigerante 600ml", "price": "R$ 6,00" }
+      ],
+      "subtotal": "R$ 41,00",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6111",
+      "status": "Em preparo",
+      "time": "35 min",
+      "orderDate": "26/08/2024",
+      "orderTime": "14:45",
+      "deliveryTime": "",
+      "address": "Av. das Américas, 3200, Barra da Tijuca - Rio de Janeiro/RJ - CEP 22640-100",
+      "items": [
+        { "name": "Picanha Grelhada", "price": "R$ 72,00" },
+        { "name": "Coca-Cola 2L", "price": "R$ 10,00" }
+      ],
+      "subtotal": "R$ 82,00",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6112",
+      "status": "Concluídos",
+      "time": "20 min",
+      "orderDate": "25/08/2024",
+      "orderTime": "13:30",
+      "deliveryTime": "13:50",
+      "address": "Rua das Camélias, 200, Jardim América - São Paulo/SP - CEP 01449-001",
+      "items": [
+        { "name": "Filé de Tilápia com Arroz", "price": "R$ 45,00" },
+        { "name": "Suco de Uva", "price": "R$ 8,00" }
+      ],
+      "subtotal": "R$ 53,00",
+      "paymentMethod": "Pagamento na entrega"
+    },
+    {
+      "id": "#6113",
+      "status": "Em preparo",
+      "time": "30 min",
+      "orderDate": "25/08/2024",
+      "orderTime": "19:00",
+      "deliveryTime": "",
+      "address": "Av. dos Pinhais, 100, Centro - Florianópolis/SC - CEP 88015-120",
+      "items": [
+        { "name": "Escondidinho de Carne Seca", "price": "R$ 33,90" },
+        { "name": "Cerveja Artesanal", "price": "R$ 15,00" }
+      ],
+      "subtotal": "R$ 48,90",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6114",
+      "status": "Pendente",
+      "time": "10 min",
+      "orderDate": "24/08/2024",
+      "orderTime": "11:15",
+      "deliveryTime": "",
+      "address": "Rua das Oliveiras, 890, Alto da Boa Vista - São Paulo/SP - CEP 04750-001",
+      "items": [
+        { "name": "Bolo de Cenoura", "price": "R$ 18,00" },
+        { "name": "Café Expresso", "price": "R$ 6,00" }
+      ],
+      "subtotal": "R$ 24,00",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6115",
+      "status": "Concluídos",
+      "time": "25 min",
+      "orderDate": "24/08/2024",
+      "orderTime": "16:00",
+      "deliveryTime": "16:25",
+      "address": "Av. das Figueiras, 400, Centro - São Paulo/SP - CEP 01046-001",
+      "items": [
+        { "name": "Lasanha de Berinjela", "price": "R$ 28,00" },
+        { "name": "Refrigerante 350ml", "price": "R$ 5,00" }
+      ],
+      "subtotal": "R$ 33,00",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6116",
+      "status": "Em preparo",
+      "time": "45 min",
+      "orderDate": "24/08/2024",
+      "orderTime": "20:30",
+      "deliveryTime": "",
+      "address": "Rua dos Ipês, 370, Morumbi - São Paulo/SP - CEP 05612-000",
+      "items": [
+        { "name": "Rodízio de Sushi", "price": "R$ 89,90" },
+        { "name": "Cerveja Sapporo", "price": "R$ 25,00" }
+      ],
+      "subtotal": "R$ 114,90",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6117",
+      "status": "Concluídos",
+      "time": "30 min",
+      "orderDate": "25/08/2024",
+      "orderTime": "18:45",
+      "deliveryTime": "19:15",
+      "address": "Rua das Gardênias, 360, Vila Mariana - São Paulo/SP - CEP 04140-000",
+      "items": [
+        { "name": "Hambúrguer Vegano", "price": "R$ 28,90" },
+        { "name": "Batata Doce Frita", "price": "R$ 12,00" }
+      ],
+      "subtotal": "R$ 40,90",
+      "paymentMethod": "Pagamento na entrega"
+    },
+    {
+      "id": "#6118",
+      "status": "Pendente",
+      "time": "5 min",
+      "orderDate": "29/08/2024",
+      "orderTime": "08:00",
+      "deliveryTime": "",
+      "address": "Rua dos Ciprestes, 500, Centro - Salvador/BA - CEP 40050-000",
+      "items": [
+        { "name": "Tapioca com Queijo Coalho", "price": "R$ 12,00" },
+        { "name": "Suco de Maracujá", "price": "R$ 7,00" }
+      ],
+      "subtotal": "R$ 19,00",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6119",
+      "status": "Em preparo",
+      "time": "20 min",
+      "orderDate": "27/08/2024",
+      "orderTime": "12:30",
+      "deliveryTime": "",
+      "address": "Rua das Orquídeas, 600, Centro - Recife/PE - CEP 50050-000",
+      "items": [
+        { "name": "Bobó de Camarão", "price": "R$ 42,90" },
+        { "name": "Arroz de Coco", "price": "R$ 15,00" }
+      ],
+      "subtotal": "R$ 57,90",
+      "paymentMethod": "Pagamento pelo aplicativo (online)"
+    },
+    {
+      "id": "#6120",
+      "status": "Concluídos",
+      "time": "25 min",
+      "orderDate": "30/08/2024",
+      "orderTime": "13:30",
+      "deliveryTime": "13:55",
+      "address": "Av. das Primaveras, 700, Centro - Brasília/DF - CEP 70070-000",
+      "items": [
+        { "name": "Peito de Frango Grelhado", "price": "R$ 32,00" },
+        { "name": "Salada Verde", "price": "R$ 15,00" }
+      ],
+      "subtotal": "R$ 47,00",
+      "paymentMethod": "Pagamento na entrega"
+    }
+  ]
+  
