@@ -4,36 +4,79 @@ import React, { useState, useEffect, useLocation } from 'react';
 import { useForm } from 'react-hook-form';
 import { formSchema } from '../../validation/cadastroValidation';
 import ParceirosSidebar from '../../componentes/ParceirosSidebar';
-
+import { getRestauranteId } from '../util/AuthenticationService';
 import iffood from "../../assets/iffood.png";
 
 const Cadastro = () => {
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, reset, formState: { errors } } = useForm({
         resolver: yupResolver(formSchema),
     });
+    const id = getRestauranteId();
 
-    const [locaisEntrega, setLocaisEntrega] = useState([{ cidade: '' }]);
+    const [formData, setFormData] = useState({
+        nomeFantasia: '',
+        razaoSocial: '',
+        cnpj: '',
+        categoria: '',
+        rua: '',
+        bairro: '',
+        numero: '',
+        cidade: '',
+        estado: '',
+        cep: '',
 
-    const onSubmit = data => {
-        axios.post('http://localhost:8080/api/restaurante', data)
-            .then(response => {
-                console.log(response.data)
-                console.log('Dados enviados com sucesso:', response.data);
-            })
-            .catch(error => {
-                console.error('Erro ao enviar os dados:', error);
-            });
-    };
+      });
 
-    const adicionarLocalEntrega = () => {
-        setLocaisEntrega([...locaisEntrega, { cidade: '' }]);
-    };
+      useEffect(() => {
 
-    const removerLocalEntrega = index => {
-        const novosLocaisEntrega = locaisEntrega.filter((_, i) => i !== index);
-        setLocaisEntrega(novosLocaisEntrega);
-    };
+        
+        const fetchData = async () => {
+            try {
+              const token = localStorage.getItem('token'); // Obtém o token JWT do localStorage
+      
+              const response = await axios.get(`http://localhost:8080/api/restaurante/?restauranteId=${id}`, {
+                headers: {
+                  Authorization: `Bearer ${token}` // Envia o token no header
+                }
+              });
+              reset({
+                cnpj: response.data.cnpj,
+                categoria: response.data.categoria,
+                
+              });
+            } catch (error) {
+              console.error('Erro ao buscar os dados', error);
+            }
+          };
+          fetchData();
+        }, [id, reset]);
+      
+
+  const handleChange = (e) => {
+    
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const onSubmit = async (data) => {
+    console.log('Form submitted:', data);
+    try {
+      const token = localStorage.getItem('token'); // Obtém o token JWT do localStorage
+
+      await axios.put(`http://localhost:8080/api/restaurante/${id}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}` // Envia o token no header
+        }
+      });
+      alert('Perfil atualizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao atualizar o perfil', error);
+    }
+  };
+
 
     return (
         <div className="flex flex-col h-screen">
@@ -47,7 +90,7 @@ const Cadastro = () => {
                             className="w-52 h-52 object-contain"
                         />
                     </div>
-                    <form onSubmit={handleSubmit(onSubmit)} className="p-1 rounded-lg shadow-lg w-5/6 overflow-y-auto">
+                    <form onSubmit={onSubmit} className="p-1 rounded-lg shadow-lg w-5/6 overflow-y-auto">
                     <h2 className="text-2xl font-bold mb-2 text-white">Cadastro</h2>
                         <div class="col-span-full">
                             <label for="photo" class="block text-sm font-medium leading-6 text-white">Adicione uma foto</label>
@@ -92,6 +135,8 @@ const Cadastro = () => {
                                     placeholder="Insira o nome do responsável"
                                     type="text"
                                     id="nomeFantasia"
+                                    value={formData.nomeFantasia}
+                                    onChange={handleChange}
                                 />
                                 {errors.nomeFantasia && <p className="text-red-500 text-sm">{errors.nomeFantasia.message}</p>}
                             </div>
@@ -103,6 +148,8 @@ const Cadastro = () => {
                                     placeholder="Insira o nome do restaurante"
                                     type="text"
                                     id="razaoSocial"
+                                    value={formData.razaoSocial}
+                                    onChange={handleChange}
                                 />
                                 {errors.razaoSocial && <p className="text-red-500 text-sm">{errors.razaoSocial.message}</p>}
                             </div>
@@ -116,6 +163,8 @@ const Cadastro = () => {
                                     placeholder="Insira o CNPJ do restaurante"
                                     type="text"
                                     id="cnpj"
+                                    value={formData.cnpj}
+                                    onChange={handleChange}
                                 />
                                 {errors.cnpj && <p className="text-red-500 text-sm">{errors.cnpj.message}</p>}
                             </div>
@@ -125,6 +174,8 @@ const Cadastro = () => {
                                     {...register('categoria')}
                                     className="w-full px-3 py-2 border rounded-xl"
                                     id="categoria"
+                                    value={formData.categoria}
+                                    onChange={handleChange}
                                 >
                                     <option value="">Selecione uma categoria</option>
                                     <option value="VEGETARIANO">Vegetariano</option>
@@ -139,33 +190,9 @@ const Cadastro = () => {
                                     <option value="PIZZARIA">Pizzaria</option>
                                     <option value="HAMBURGUERIA">Hamburgueria</option>
                                     <option value="CAFETERIA">Cafeteria</option>
-                                    <option value="BISTRÔ">Bistrô</option>
+                                    <option value="BISTRO">Bistrô</option>
                                 </select>
                                 {errors.categoria && <p className="text-red-500 text-sm">{errors.categoria.message}</p>}
-                            </div>
-                        </div>
-                        <div className="flex space-x-6">
-                            <div className="w-1/2 mb-4">
-                                <label className="block text-white mb-2" htmlFor="email">Email</label>
-                                <input
-                                    {...register('email')}
-                                    className="w-full px-3 py-2 border rounded-xl"
-                                    placeholder="Insira o e-mail do administrador"
-                                    type="email"
-                                    id="email"
-                                />
-                                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-                            </div>
-                            <div className="w-1/2 mb-4">
-                                <label className="block text-white mb-2" htmlFor="senha">Senha</label>
-                                <input
-                                    {...register('senha')}
-                                    className="w-full px-3 py-2 border rounded-xl"
-                                    placeholder="Insira sua senha"
-                                    type="password"
-                                    id="senha"
-                                />
-                                {errors.senha && <p className="text-red-500 text-sm">{errors.senha.message}</p>}
                             </div>
                         </div>
                         <h4 className="text-2xl font-bold mb-6 mt-5 text-white">Endereço</h4>
@@ -178,6 +205,8 @@ const Cadastro = () => {
                                     placeholder="Insira o rua"
                                     type="text"
                                     id="rua"
+                                    value={formData.rua}
+                                    onChange={handleChange}
                                 />
                                 {errors.rua && <p className="text-red-500 text-sm">{errors.rua.message}</p>}
                             </div>
@@ -189,6 +218,8 @@ const Cadastro = () => {
                                     placeholder="Insira o bairro"
                                     type="text"
                                     id="bairro"
+                                    value={formData.bairro}
+                                    onChange={handleChange}
                                 />
                                 {errors.bairro && <p className="text-red-500 text-sm">{errors.bairro.message}</p>}
                             </div>
@@ -202,6 +233,8 @@ const Cadastro = () => {
                                     placeholder="Insira o número"
                                     type="text"
                                     id="numero"
+                                    value={formData.numero}
+                                    onChange={handleChange}
                                 />
                                 {errors.numero && <p className="text-red-500 text-sm">{errors.numero.message}</p>}
                             </div>
@@ -213,6 +246,8 @@ const Cadastro = () => {
                                     placeholder="Insira a cidade"
                                     type="text"
                                     id="cidade"
+                                    value={formData.cidade}
+                                    onChange={handleChange}
                                 />
                                 {errors.cidade && <p className="text-red-500 text-sm">{errors.cidade.message}</p>}
                             </div>
@@ -226,6 +261,8 @@ const Cadastro = () => {
                                     placeholder="Insira o Estado"
                                     type="text"
                                     id="estado"
+                                    value={formData.estado}
+                                    onChange={handleChange}
                                 />
                                 {errors.estado && <p className="text-red-500 text-sm">{errors.estado.message}</p>}
                             </div>
@@ -237,49 +274,14 @@ const Cadastro = () => {
                                     placeholder="Insira o CEP"
                                     type="text"
                                     id="cep"
+                                    value={formData.cep}
+                                    onChange={handleChange}
                                 />
                                 {errors.cep && <p className="text-red-500 text-sm">{errors.cep.message}</p>}
                             </div>
                         </div>
-                        <div className="mb-4">
-                            <label className="block text-white mb-2">Locais de entrega</label>
-                            {locaisEntrega.map((local, index) => (
-                                <div key={index} className="flex space-x-4 mb-4">
-                                    <input
-                                        {...register(`locaisEntrega.${index}.cidade`)}
-                                        className="w-full px-3 py-2 border rounded-xl"
-                                        placeholder="Insira o nome da cidade"
-                                        type="text"
-                                    />
-                                    <input
-                                        {...register(`locaisEntrega.${index}.taxa`)}
-                                        className="w-full px-3 py-2 border rounded-xl"
-                                        placeholder="Insira a taxa de entrega"
-                                        type="text"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => removerLocalEntrega(index)}
-                                        className="text-red-500 hover:text-red-700"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            ))}
-                            <button
-                                type="button"
-                                onClick={adicionarLocalEntrega}
-                                className="flex items-center text-white hover:text-gray-200"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6 mr-2">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                                Adicionar cidade
-                            </button>
-                        </div>
-                        <button className="w-1/3 bg-secondary_1 text-white font-bold text-xl py-2 rounded-xl hover:bg-secondary_2 mt-5 mb-4">Cadastrar</button>
+
+                        <button className="w-1/3 bg-secondary_1 text-white font-bold text-xl py-2 rounded-xl hover:bg-secondary_2 mt-5 mb-4" type="submit">Salvar</button>
                     
                     </form>
                 </div>

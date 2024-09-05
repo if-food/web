@@ -69,4 +69,6 @@ export const getRestauranteId = () => {
 export const getRestauranteNomeFantasia = () => {
    return localStorage.getItem(RESTAURANTE_NOME_FANTASIA_ATTRIBUTE_NAME);
 };
+
+
  
