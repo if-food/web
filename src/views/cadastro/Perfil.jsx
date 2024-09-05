@@ -1,15 +1,20 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import axios from "axios";
-import React, { useState, useEffect, useLocation } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { formSchema } from '../../validation/cadastroValidation';
 import ParceirosSidebar from '../../componentes/ParceirosSidebar';
 import { getRestauranteId } from '../util/AuthenticationService';
 import iffood from "../../assets/iffood.png";
+import pix from "../../assets/pix.png";
+import cartao from "../../assets/mastercard.png";
+import dinheiro from "../../assets/dinheiro.png";
+import vr from "../../assets/vale-refeicao.png";
+import va from "../../assets/VR-Alimentação.png";
 
 const Cadastro = () => {
 
-    const { register, reset, formState: { errors } } = useForm({
+    const { register, handleSubmit, reset, formState: { errors } } = useForm({
         resolver: yupResolver(formSchema),
     });
     const id = getRestauranteId();
@@ -18,64 +23,90 @@ const Cadastro = () => {
         nomeFantasia: '',
         razaoSocial: '',
         cnpj: '',
-        categoria: '',
+        categoria: "SUSHI",
         rua: '',
         bairro: '',
         numero: '',
         cidade: '',
         estado: '',
         cep: '',
+        aceitaPix: false,
+        aceitaCartaoCredito: false,
+        aceitaCartaoDebito: false,
+        aceitaDinheiro: false,
+        aceitaValeRefeicao: false,
+        aceitaValeAlimentacao: false,
 
-      });
+    });
+    function convertToBoolean(value) {
+        return value === "on";
+    }
+    const handleSave = async () => {
+        console.log(formData)
+        try {
+            const token = localStorage.getItem('token'); // Obtém o token JWT do localStorage
+            formData.aceitaPix = convertToBoolean(formData.aceitaPix);
+            formData.aceitaCartaoCredito = convertToBoolean(formData.aceitaCartaoCredito);
+            formData.aceitaCartaoDebito = convertToBoolean(formData.aceitaCartaoDebito);
+            formData.aceitaDinheiro = convertToBoolean(formData.aceitaDinheiro);
+            formData.aceitaValeRefeicao = convertToBoolean(formData.aceitaValeRefeicao);
+            formData.aceitaValeAlimentacao = convertToBoolean(formData.aceitaValeAlimentacao);          
+            await axios.put(`http://localhost:8080/api/restaurante/${id}`, formData, {
+                /*  headers: {
+                   Authorization: `Bearer ${token}` // Envia o token no header
+                 } */
+            });
 
-      useEffect(() => {
+        } catch (error) {
+            console.error('Erro ao atualizar o perfil', error);
+        }
+    };
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-        
-        const fetchData = async () => {
-            try {
-              const token = localStorage.getItem('token'); // Obtém o token JWT do localStorage
-      
-              const response = await axios.get(`http://localhost:8080/api/restaurante/?restauranteId=${id}`, {
+    const fetchData = async () => {
+        try {
+            const token = localStorage.getItem('token'); // Obtém o token JWT do localStorage
+
+            const response = await axios.get(`http://localhost:8080/api/restaurante/?restauranteId=${id}`, {
                 headers: {
-                  Authorization: `Bearer ${token}` // Envia o token no header
+                    Authorization: `Bearer ${token}` // Envia o token no header
                 }
-              });
-              reset({
+            });
+            reset({
                 cnpj: response.data.cnpj,
                 categoria: response.data.categoria,
-                
-              });
-            } catch (error) {
-              console.error('Erro ao buscar os dados', error);
-            }
-          };
-          fetchData();
-        }, [id, reset]);
-      
 
-  const handleChange = (e) => {
-    
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const onSubmit = async (data) => {
-    console.log('Form submitted:', data);
-    try {
-      const token = localStorage.getItem('token'); // Obtém o token JWT do localStorage
-
-      await axios.put(`http://localhost:8080/api/restaurante/${id}`, data, {
-        headers: {
-          Authorization: `Bearer ${token}` // Envia o token no header
+            });
+        } catch (error) {
+            console.error('Erro ao buscar os dados', error);
         }
-      });
-      alert('Perfil atualizado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao atualizar o perfil', error);
-    }
-  };
+    };
+
+    const handleChange = (e) => {
+        console.log(e.target.value)
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const onSubmit = async (data) => {
+        console.log('Form submitted:', data);
+        try {
+            const token = localStorage.getItem('token'); // Obtém o token JWT do localStorage
+
+            await axios.put(`http://localhost:8080/api/restaurante/${id}`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Envia o token no header
+                }
+            });
+            alert('Perfil atualizado com sucesso!');
+        } catch (error) {
+            console.error('Erro ao atualizar o perfil', error);
+        }
+    };
 
 
     return (
@@ -90,21 +121,21 @@ const Cadastro = () => {
                             className="w-52 h-52 object-contain"
                         />
                     </div>
-                    <form onSubmit={onSubmit} className="p-1 rounded-lg shadow-lg w-5/6 overflow-y-auto">
-                    <h2 className="text-2xl font-bold mb-2 text-white">Cadastro</h2>
+                    <div className="p-1 rounded-lg shadow-lg w-5/6 overflow-y-auto">
+                        <h2 className="text-2xl font-bold mb-2 text-white">Cadastro</h2>
                         <div class="col-span-full">
                             <label for="photo" class="block text-sm font-medium leading-6 text-white">Adicione uma foto</label>
                             <div class="mt-1 flex items-center gap-x-3 mb-4">
                                 <svg class="h-24 w-24 text-gray-300" viewBox="0 0 22 22" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd" />
                                 </svg>
-                    
-                                    <button
-                                        type="button"
-                                        class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ">
-                                        Alterar
-                                    </button>
-                    
+
+                                <button
+                                    type="button"
+                                    class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 ">
+                                    Alterar
+                                </button>
+
                             </div>
                         </div>
                         <div className="mb-4 bg-white">
@@ -281,9 +312,94 @@ const Cadastro = () => {
                             </div>
                         </div>
 
-                        <button className="w-1/3 bg-secondary_1 text-white font-bold text-xl py-2 rounded-xl hover:bg-secondary_2 mt-5 mb-4" type="submit">Salvar</button>
-                    
-                    </form>
+                        <div className="flex space-x-6">
+
+
+                            <div className="w-1/2 mb-4">
+                                <img src={pix} alt="" />
+                                <label className="block text-white mb-2" htmlFor="aceitaPix">PIX</label>
+                                <input
+                                    {...register('aceitaPix')}
+                                    className="mr-2"
+                                    type="checkbox"
+                                    id="aceitaPix"
+                                    checked={formData.aceitaPix}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="w-1/2 mb-4">
+                                <img src={cartao} alt="" />
+                                <label className="block text-white mb-2" htmlFor="aceitaCartaoCredito">Cartão de Crédito</label>
+                                <input
+                                    {...register('aceitaCartaoCredito')}
+                                    className="mr-2"
+                                    type="checkbox"
+                                    id="aceitaCartaoCredito"
+                                    checked={formData.aceitaCartaoCredito}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="w-1/2 mb-4">
+                                <img src={cartao} alt="" />
+                                <label className="block text-white mb-2" htmlFor="aceitaCartaoDebito">Cartão de Débito</label>
+                                <input
+                                    {...register('aceitaCartaoDebito')}
+                                    className="mr-2"
+                                    type="checkbox"
+                                    id="aceitaCartaoDebito"
+                                    checked={formData.aceitaCartaoDebito}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="w-1/2 mb-4">
+                                <img className='w-14' src={dinheiro} alt="" />
+                                <label className="block text-white mb-2" htmlFor="aceitaDinheiro">Dinheiro</label>
+                                <input
+                                    {...register('aceitaDinheiro')}
+                                    className="mr-2"
+                                    type="checkbox"
+                                    id="aceitaDinheiro"
+                                    checked={formData.aceitaDinheiro}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="w-1/2 mb-4">
+                                <img className='w-12' src={vr} alt="" />
+                                <label className="block text-white mb-2" htmlFor="aceitaValeRefeicao">Vale Refeição</label>
+                                <input
+                                    {...register('aceitaValeRefeicao')}
+                                    className="mr-2"
+                                    type="checkbox"
+                                    id="aceitaValeRefeicao"
+                                    checked={formData.aceitaValeRefeicao}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+                            <div className="w-1/2 mb-4">
+                                <img className='w-12' src={va} alt="" />
+                                <label className="block text-white mb-2" htmlFor="aceitaValeAlimentacao">Aceita Vale Alimentação</label>
+                                <input
+                                    {...register('aceitaValeAlimentacao')}
+                                    className="mr-2"
+                                    type="checkbox"
+                                    id="aceitaValeAlimentacao"
+                                    checked={formData.aceitaValeAlimentacao}
+                                    onChange={handleChange}
+                                />
+                            </div>
+
+
+                        </div>
+
+
+                        <button className="w-1/3 bg-secondary_1 text-white font-bold text-xl py-2 rounded-xl hover:bg-secondary_2 mt-5 mb-4" onClick={handleSave}>Salvar</button>
+
+                    </div>
                 </div>
             </div>
             <footer className="bg-gradient-to-t from-[#1F2026] via-[#1c1918] to-[#37383F] text-secondary_3_variant py-4 text-center mt-auto">
