@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { itemSchema } from '../../validation/ProdutoValidation'; // Importe o esquema de validação
+
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '../../services/firebase'; // Certifique-se de que você está importando o `storage` corretamente
 
 function NovoItem({ onClose, onAddItem, selectedCategoryId, selectedCategoryName, itemToEdit, restauranteId }) {
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState('');
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -14,12 +18,13 @@ function NovoItem({ onClose, onAddItem, selectedCategoryId, selectedCategoryName
       setName(itemToEdit.name);
       setPrice(itemToEdit.price);
       setDescription(itemToEdit.description);
-      setImage(itemToEdit.image); // Assume que a imagem é um URL ou similar
+      setImageUrl(itemToEdit.image); // Assume que a imagem é um URL ou similar
     } else {
       setName('');
       setPrice('');
       setDescription('');
       setImage(null);
+      setImageUrl('');
     }
   }, [itemToEdit]);
 
@@ -29,7 +34,7 @@ function NovoItem({ onClose, onAddItem, selectedCategoryId, selectedCategoryName
         name,
         price: parseFloat(price),
         description,
-        image
+        image: imageUrl
       }, { abortEarly: false });
       setErrors({});
       return true;
@@ -46,10 +51,21 @@ function NovoItem({ onClose, onAddItem, selectedCategoryId, selectedCategoryName
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      console.log(selectedFile);
-      console.log(typeof (selectedFile));
-    
       setImage(selectedFile);
+    }
+  };
+
+  const uploadImage = async () => {
+    if (!image) return '';
+  
+    const imageRef = ref(storage, `images/${image.name}`);
+    try {
+      await uploadBytes(imageRef, image);
+      const downloadURL = await getDownloadURL(imageRef);
+      return downloadURL;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
     }
   };
 
@@ -58,20 +74,18 @@ function NovoItem({ onClose, onAddItem, selectedCategoryId, selectedCategoryName
     if (!isValid) return;
 
     try {
-      const formData = new FormData();
-      formData.append('imageFile', image);
-      formData.append('data', JSON.stringify({
+      let uploadedImageUrl = '';
+      if (image) {
+        uploadedImageUrl = await uploadImage();
+      }
+
+      const response = await axios.post(`http://localhost:8080/api/produto/?restauranteId=${restauranteId}&categoriaId=${selectedCategoryId}`, {
         titulo: name,
         descricao: description,
         valorUnitario: parseFloat(price),
         restauranteId,
-        categoriaId: selectedCategoryId
-      }));
-
-      const response = await axios.postForm('http://localhost:8080/api/produto', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+        categoriaId: selectedCategoryId,
+        imagem: uploadedImageUrl // Use a URL da imagem do Firebase
       });
 
       console.log(response.data);

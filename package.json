@@ -13,6 +13,7 @@
     "chart.js": "^4.4.4",
     "chartjs-adapter-date-fns": "^3.0.0",
     "dotenv": "^16.4.5",
+    "firebase": "^10.13.1",
     "if-food-web": "file:",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
