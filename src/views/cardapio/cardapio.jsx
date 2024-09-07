@@ -116,16 +116,21 @@ function Cardapio() {
 
     const handleDeleteItem = async (id, categoryId, imageUrl) => {
         try {
-            // Exclui a imagem do Firebase Storage
+            // Exclui a imagem do Firebase Storage, se a URL estiver disponível
             if (imageUrl) {
-                const imageRef = ref(storage, imageUrl); // Referência à imagem
-                await deleteObject(imageRef); // Exclui a imagem
+                try {
+                    const imageRef = ref(storage, imageUrl); // Referência à imagem
+                    await deleteObject(imageRef); // Exclui a imagem
+                } catch (imageError) {
+                    console.error('Erro ao excluir imagem:', imageError);
+                    alert('Erro ao excluir imagem: ' + (imageError.response?.data?.message || imageError.message));
+                }
             }
-    
+        
             // Exclui o item do backend
             await axios.delete(`http://localhost:8080/api/produto/${id}`);
             console.log('Produto excluído com sucesso');
-    
+        
             // Atualiza o estado local após a exclusão
             setCategories(prevCategories =>
                 prevCategories.map(category => {
@@ -143,6 +148,7 @@ function Cardapio() {
             alert('Erro ao excluir produto: ' + (error.response?.data?.message || error.message));
         }
     };
+    
     
     const handleDeleteCategory = async (categoryId) => {
         if (window.confirm('Tem certeza de que deseja excluir esta categoria?')) {

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { itemSchema } from '../../validation/ProdutoValidation'; // Importe o esquema de validação
-
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../../services/firebase'; // Certifique-se de que você está importando o `storage` corretamente
 
@@ -74,22 +73,31 @@ function NovoItem({ onClose, onAddItem, selectedCategoryId, selectedCategoryName
     if (!isValid) return;
 
     try {
-      let uploadedImageUrl = '';
+      let uploadedImageUrl = imageUrl; // Use a URL existente se não houver nova imagem
       if (image) {
         uploadedImageUrl = await uploadImage();
       }
 
-      const response = await axios.post(`http://localhost:8080/api/produto/?restauranteId=${restauranteId}&categoriaId=${selectedCategoryId}`, {
+      const requestData = {
         titulo: name,
         descricao: description,
         valorUnitario: parseFloat(price),
         restauranteId,
         categoriaId: selectedCategoryId,
         imagem: uploadedImageUrl // Use a URL da imagem do Firebase
-      });
+      };
 
-      console.log(response.data);
-      if (onAddItem) onAddItem(response.data);
+      if (itemToEdit) {
+        // Atualizar item existente
+        await axios.put(`http://localhost:8080/api/produto/?produtoId=${itemToEdit.id}&categoriaId=${selectedCategoryId}`, requestData);
+        
+      } else {
+        // Criar novo item
+        await axios.post(`http://localhost:8080/api/produto/?restauranteId=${restauranteId}&categoriaId=${selectedCategoryId}`, requestData);
+      }
+
+      if (onAddItem) onAddItem(requestData);
+      onClose(); // Fechar o modal após salvar
     } catch (error) {
       console.error('Error making the request:', error);
     }
