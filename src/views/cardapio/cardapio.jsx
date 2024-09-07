@@ -5,6 +5,8 @@ import NovaCategoria from './novaCategoria';
 import NovoItem from './novoItem';
 import { getRestauranteId } from '../util/AuthenticationService';
 import axios from 'axios';
+import { storage } from '../../services/firebase'; // Certifique-se de que o caminho está correto
+import { ref, deleteObject } from 'firebase/storage';
 
 const generateId = () => '_' + Math.random().toString(36).substr(2, 9);
 
@@ -23,26 +25,20 @@ function Cardapio() {
         setRestauranteId(id);
         fetchCategories(id);
     }, []);
-    
+
     const fetchCategories = async (id) => {
-        console.time('fetchCategories');
-    
-        const defaultImageUrl = 'path/to/default/image.jpg'; // Path to the default image
-    
+        const defaultImageUrl = 'path/to/default/image.jpg'; // Caminho para a imagem padrão
+
         try {
             const response = await axios.get(`http://localhost:8080/api/categoria_produto/cardapio/?restauranteId=${id}`);
             const categoriesData = await Promise.all(response.data.map(async (category) => {
                 const items = await Promise.all(category.produtos.map(async (produto) => {
                     let imageUrl = defaultImageUrl;
-    
-                    if (produto.photo) {
-                        const byteArray = typeof produto.photo === 'string' 
-                            ? Uint8Array.from(atob(produto.photo), c => c.charCodeAt(0)) 
-                            : new Uint8Array(produto.photo);
-                        const blob = new Blob([byteArray], { type: 'image/jpeg' });
-                        imageUrl = URL.createObjectURL(blob);
+
+                    if (produto.imagem) { // Usa a URL da imagem armazenada no backend
+                        imageUrl = produto.imagem;
                     }
-    
+
                     return {
                         id: produto.id,
                         name: produto.titulo,
@@ -51,22 +47,19 @@ function Cardapio() {
                         price: produto.valorUnitario
                     };
                 }));
-    
+
                 return {
                     ...category,
                     items
                 };
             }));
-    
+
             setCategories(categoriesData);
         } catch (error) {
             console.error('Erro ao carregar categorias:', error.message);
             alert(`Erro ao carregar categorias: ${error.message}`);
         }
-    
-        console.timeEnd('fetchCategories');
     };
-    
 
     const handleAddCategory = async (categoryName, description) => {
         if (categoryName) {
@@ -74,10 +67,8 @@ function Cardapio() {
                 nome: categoryName,
                 descricao: description,
             };
-            console.log(categoryRequest);
             try {
                 const response = await axios.post(`http://localhost:8080/api/categoria_produto/?restauranteId=${restauranteId}`, categoryRequest);
-                console.log(response.data);
                 const newCategory = { ...response.data, items: [] };
                 setCategories([...categories, newCategory]);
                 setSelectedCategoryId(newCategory.id);
@@ -123,23 +114,50 @@ function Cardapio() {
         setCurrentCategoryForItem({ id: categoryId, nome: category.nome });
     };
 
-    const handleDeleteItem = (id, categoryId) => {
-        setCategories(categories.map(category => {
-            if (category.id === categoryId) {
-                return {
-                    ...category,
-                    items: category.items.filter(item => item.id !== id)
-                };
+    const handleDeleteItem = async (id, categoryId, imageUrl) => {
+        try {
+            // Exclui a imagem do Firebase Storage
+            if (imageUrl) {
+                const imageRef = ref(storage, imageUrl); // Referência à imagem
+                await deleteObject(imageRef); // Exclui a imagem
             }
-            return category;
-        }));
+    
+            // Exclui o item do backend
+            await axios.delete(`http://localhost:8080/api/produto/${id}`);
+            console.log('Produto excluído com sucesso');
+    
+            // Atualiza o estado local após a exclusão
+            setCategories(prevCategories =>
+                prevCategories.map(category => {
+                    if (category.id === categoryId) {
+                        return {
+                            ...category,
+                            items: category.items.filter(item => item.id !== id)
+                        };
+                    }
+                    return category;
+                })
+            );
+        } catch (error) {
+            console.error('Erro ao excluir produto:', error);
+            alert('Erro ao excluir produto: ' + (error.response?.data?.message || error.message));
+        }
     };
-
-    const handleDeleteCategory = (categoryId) => {
+    
+    const handleDeleteCategory = async (categoryId) => {
         if (window.confirm('Tem certeza de que deseja excluir esta categoria?')) {
-            setCategories(categories.filter(category => category.id !== categoryId));
-            if (selectedCategoryId === categoryId) {
-                setSelectedCategoryId('');
+            try {
+                // Chamada para o backend para excluir a categoria
+                await axios.delete(`http://localhost:8080/api/categoria_produto/${categoryId}`);
+
+                // Atualiza o estado local após a exclusão
+                setCategories(categories.filter(category => category.id !== categoryId));
+                if (selectedCategoryId === categoryId) {
+                    setSelectedCategoryId('');
+                }
+            } catch (error) {
+                console.error('Erro ao excluir categoria:', error);
+                alert('Erro ao excluir categoria: ' + error.message);
             }
         }
     };
@@ -234,16 +252,16 @@ function Cardapio() {
                                                         <th className="px-6 py-3 text-left text-xs font-extrabold text-secondary_1 uppercase tracking-wider">
                                                             Imagem
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-extrabold text-secondary_1  uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-extrabold text-secondary_1 uppercase tracking-wider">
                                                             Nome
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-extrabold text-secondary_1  uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-extrabold text-secondary_1 uppercase tracking-wider">
                                                             Preço
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-extrabold text-secondary_1  uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-extrabold text-secondary_1 uppercase tracking-wider">
                                                             Descrição
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-extrabold text-secondary_1  uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-extrabold text-secondary_1 uppercase tracking-wider">
                                                             Ações
                                                         </th>
                                                     </tr>
@@ -271,8 +289,8 @@ function Cardapio() {
                                                                     <FaEdit />
                                                                 </button>
                                                                 <button
-                                                                    onClick={() => handleDeleteItem(item.id, category.id)}
-                                                                    className="text-2xl text-atention_02  hover:text-red-400 mx-2"
+                                                                    onClick={() => handleDeleteItem(item.id, category.id, item.image)}
+                                                                    className="text-2xl text-atention_02 hover:text-red-400 mx-2"
                                                                 >
                                                                     <FaTrashAlt />
                                                                 </button>
@@ -288,7 +306,7 @@ function Cardapio() {
                                                 >
                                                     <span className='flex justify-center items-center text-lg'>
                                                         <FaTrashAlt className='mr-2' />
-                                                         Excluir Categoria
+                                                        Excluir Categoria
                                                     </span>
                                                 </button>
                                             </div>
@@ -300,7 +318,7 @@ function Cardapio() {
                     </div>
                 </div>
             </div>
-            
+
             {showNovaCategoria && (
                 <NovaCategoria
                     onClose={() => setShowNovaCategoria(false)}
