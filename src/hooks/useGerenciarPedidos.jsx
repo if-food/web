@@ -1,50 +1,86 @@
-// src/hooks/useOrderManagement.js
-import { useState } from "react";
-import ordersData from "../data/orders.json"; // Importe o JSON com os dados dos pedidos
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { getRestauranteId } from '../views/util/AuthenticationService';
 
 const useOrderManagement = () => {
-  const [orders, setOrders] = useState(ordersData); // Estado para armazenar pedidos
+  const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [restauranteId, setRestauranteId] = useState('');
+ 
 
-  // Função para lidar com o clique em um pedido
+  useEffect(() => {
+    const restauranteId= getRestauranteId();
+    
+    
+
+    const fetchOrders = async () => {
+      if (restauranteId == null) return; // Não faz a solicitação se restauranteId não estiver definido
+
+      try {
+        const response = await axios.get(`http://localhost:8080/api/pedido/?restauranteId=${restauranteId}`);
+        setOrders(response.data);
+        console.log(restauranteId)
+        console.log(response.data)
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, [restauranteId]);
+
   const handleOrderClick = (orderId) => {
     const order = orders.find((o) => o.id === orderId);
     setSelectedOrder(order);
   };
 
-  const updateOrderStatus = (status) => {
+  const updateOrderStatus = async (status) => {
     if (selectedOrder) {
-      const updatedOrders = orders.map((order) =>
-        order.id === selectedOrder.id
-          ? { ...order, status }
-          : order
-      );
-      setOrders(updatedOrders);
-      setSelectedOrder((prev) => ({ ...prev, status }));
+      try {
+        const updatedOrder = { ...selectedOrder, status };
+        await axios.put(`http://localhost:8080/api/pedido/${selectedOrder.id}`, updatedOrder);
+        const updatedOrders = orders.map((order) =>
+          order.id === selectedOrder.id ? updatedOrder : order
+        );
+        setOrders(updatedOrders);
+        setSelectedOrder((prev) => ({ ...prev, status }));
+      } catch (err) {
+        setError(err);
+      }
     }
   };
 
-  const confirmOrder = () => updateOrderStatus("Em preparo");
+  const confirmOrder = () => updateOrderStatus("EM PREPARO");
 
-  const cancelOrder = () => {
+  const cancelOrder = async () => {
     if (selectedOrder) {
-      const updatedOrders = orders.filter(
-        (order) => order.id !== selectedOrder.id
-      );
-      setOrders(updatedOrders);
-      setSelectedOrder(null);
+      try {
+        await axios.delete(`http://localhost:8080/api/pedido/${selectedOrder.id}`);
+        const updatedOrders = orders.filter((order) => order.id !== selectedOrder.id);
+        setOrders(updatedOrders);
+        setSelectedOrder(null);
+      } catch (err) {
+        setError(err);
+      }
     }
   };
 
-  const dispatchOrder = () => updateOrderStatus("Concluídos");
+  const dispatchOrder = () => updateOrderStatus("CONCLUÍDO");
 
-  const deleteOrder = () => {
+  const deleteOrder = async () => {
     if (selectedOrder) {
-      const updatedOrders = orders.filter(
-        (order) => order.id !== selectedOrder.id
-      );
-      setOrders(updatedOrders);
-      setSelectedOrder(null);
+      try {
+        await axios.delete(`http://localhost:8080/api/pedido/${selectedOrder.id}`);
+        const updatedOrders = orders.filter((order) => order.id !== selectedOrder.id);
+        setOrders(updatedOrders);
+        setSelectedOrder(null);
+      } catch (err) {
+        setError(err);
+      }
     }
   };
 
@@ -55,7 +91,10 @@ const useOrderManagement = () => {
     confirmOrder,
     cancelOrder,
     dispatchOrder,
-    deleteOrder
+    deleteOrder,
+    loading,
+    error,
+    restauranteId,
   };
 };
 

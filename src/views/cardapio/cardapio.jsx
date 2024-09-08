@@ -22,6 +22,7 @@ function Cardapio() {
 
     useEffect(() => {
         const id = getRestauranteId();
+        console.log(id)
         setRestauranteId(id);
         fetchCategories(id);
     }, []);

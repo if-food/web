@@ -1,28 +1,23 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import successImage from "../../assets/Success Illustration.png";
-import mastercardLogo from "../../assets/mastercard.png";
-import Sidebar from "../../componentes/ParceirosSidebar";
-import useOrderManagement from "../../hooks/useGerenciarPedidos";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import successImage from '../../assets/Success Illustration.png';
+import mastercardLogo from '../../assets/mastercard.png';
+import Sidebar from '../../componentes/ParceirosSidebar';
+import useOrderManagement from '../../hooks/useGerenciarPedidos';
+
+
 
 const GerenciarPedidos = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState(""); // Estado para o termo de pesquisa
+  const [searchTerm, setSearchTerm] = useState("");
+  const { orders, selectedOrder, handleOrderClick, confirmOrder, cancelOrder, dispatchOrder, deleteOrder, loading, error } = useOrderManagement();
 
-  const {
-    orders,
-    selectedOrder,
-    handleOrderClick,
-    confirmOrder,
-    cancelOrder,
-    dispatchOrder,
-    deleteOrder
-  } = useOrderManagement();
-
-  // Filtrar pedidos com base no termo de pesquisa
   const filteredOrders = orders.filter(order =>
-    order.id.toLowerCase().includes(searchTerm.toLowerCase())
+    String(order.id).toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) return <div>Carregando...</div>;
+  if (error) return <div>Erro ao carregar pedidos: {error.message}</div>;
 
   return (
     <div className="flex flex-col h-screen">
@@ -35,25 +30,25 @@ const GerenciarPedidos = () => {
                 className="w-full input-underline bg-gray-100"
                 placeholder="Busque pelo número do pedido"
                 type="text"
-                value={searchTerm} // Valor do input controlado pelo estado
-                onChange={(e) => setSearchTerm(e.target.value)} // Atualiza o termo de pesquisa
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </span>
             <div className="flex flex-col flex-grow overflow-hidden">
               <div className="flex flex-col flex-grow overflow-y-auto">
-                {["Pendente", "Em preparo", "Concluídos"].map((status) => (
+                {["PENDENTE", "EM PREPARO", "CONCLUÍDO"].map((status) => (
                   <div className="flex flex-col" key={status}>
                     <div className="flex justify-between items-center bg-gray-300 py-3 px-4">
                       <span className="text-xl font-bold text-secondary_1">
                         {status}
                       </span>
                       <span className="text-xl font-bold text-secondary_1">
-                        {filteredOrders.filter((o) => o.status === status).length}
+                        {filteredOrders.filter((o) => o.statusEntrega === status).length}
                       </span>
                     </div>
                     <div className="flex flex-col text-secondary_1">
                       {filteredOrders
-                        .filter((o) => o.status === status)
+                        .filter((o) => o.statusEntrega === status)
                         .map((order) => (
                           <div
                             key={order.id}
@@ -63,16 +58,16 @@ const GerenciarPedidos = () => {
                             <div className="flex flex-col justify-between">
                               <span className="font-semibold">{order.id}</span>
                               <span className="font-semibold">
-                                {order.status === "Pendente"
+                                {order.statusEntrega === "PENDENTE"
                                   ? "Confirme o pedido"
                                   : "Entregar até " + order.deliveryTime}
                               </span>
                             </div>
                             <button
                               className={`${
-                                order.status === "Pendente"
+                                order.statusEntrega === "PENDENTE"
                                   ? "bg-atention_02"
-                                  : order.status === "Em preparo"
+                                  : order.statusEntrega === "EM PREPARO"
                                   ? "bg-orange-500"
                                   : "bg-secondary_2"
                               } text-white py-0.5 px-5 w-fit h-fit rounded-full`}
@@ -108,7 +103,7 @@ const GerenciarPedidos = () => {
                 </span>
                 <div className="w-2 h-2 rounded-full bg-secondary_3"></div>
                 <span className="text-2xl text-secondary_3_variant">
-                  Feito às {selectedOrder.deliveryTime}
+                  Feito às {selectedOrder.time}
                 </span>
               </div>
               <div className="flex gap-8 items-center w-full bg-white rounded-md px-8 py-5">
@@ -124,34 +119,34 @@ const GerenciarPedidos = () => {
               <div className="flex text-secondary_1 flex-col w-full h-fit bg-white rounded-md">
                 <div
                   className={`${
-                    selectedOrder.status === "Pendente"
+                    selectedOrder.statusEntrega === "PENDENTE"
                       ? "bg-red-300 text-secondary_1 border-b-2 border-secondary_3"
-                      : selectedOrder.status === "Em preparo"
+                      : selectedOrder.statusEntrega === "EM PREPARO"
                       ? "bg-orange-300 text-secondary_1 border-b-2 border-secondary_3"
                       : "bg-green-300 text-secondary_1 border-b-2 border-secondary_3"
-                  } px-8 py-5 w-full rounded-t-md`}
+                  } flex justify-between px-8 py-5`}
                 >
-                  <div className="flex flex-col justify-between">
-                    <span className="font-extrabold text-xl">{selectedOrder.status}</span>
+                  <div className="flex flex-col">
+                    <span className="font-extrabold text-xl">{selectedOrder.statusEntrega}</span>
                     <span>{selectedOrder.time} minutos para confirmar</span>
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  {selectedOrder.items.map((item, index) => (
+                  {selectedOrder.itens.map((item, index) => (
                     <div
                       key={index}
                       className="flex justify-between border-b-2 border-secondary_3 px-8 py-5"
                     >
                       <div className="flex gap-2">
                         <span className="font-bold">{index + 1}</span>
-                        <span className="text-secondary">{item.name}</span>
+                        <span className="text-secondary">{item.produto.titulo}</span>
                       </div>
-                      <span>{item.price}</span>
+                      <span>{item.precoUnitario}</span>
                     </div>
                   ))}
                   <div className="flex justify-between px-8 py-5">
                     <span className="text-secondary text-xl font-extrabold">Subtotal</span>
-                    <span className="text-xl text-atention_02 font-bold">{selectedOrder.subtotal}</span>
+                    <span className="text-xl text-atention_02 font-bold">{selectedOrder.valorTotal}</span>
                   </div>
                 </div>
               </div>
@@ -159,7 +154,7 @@ const GerenciarPedidos = () => {
                 <img src={mastercardLogo} alt="Mastercard" />
                 <div className="flex flex-col gap-1">
                   <span className="text-secondary font-semibold">
-                    {selectedOrder.paymentMethod}
+                    {selectedOrder.metodoPagamento}
                   </span>
                   <span className="text-secondary">
                     O entregador não deve cobrar este valor no ato da entrega
@@ -167,7 +162,7 @@ const GerenciarPedidos = () => {
                 </div>
               </div>
               <div className="flex gap-16 ml-auto mt-10">
-                {selectedOrder.status === "Pendente" && (
+                {selectedOrder.statusEntrega === "PENDENTE" && (
                   <>
                     <button
                       onClick={cancelOrder}
@@ -183,7 +178,7 @@ const GerenciarPedidos = () => {
                     </button>
                   </>
                 )}
-                {selectedOrder.status === "Em preparo" && (
+                {selectedOrder.statusEntrega === "EM PREPARO" && (
                   <button
                     onClick={dispatchOrder}
                     className="flex items-center font-extrabold text-white text-2xl transition-opacity rounded-2xl px-24 p-3 border-2 bg-secondary_1 hover:bg-secondary_2"
@@ -191,7 +186,7 @@ const GerenciarPedidos = () => {
                     Despachar
                   </button>
                 )}
-                {selectedOrder.status === "Concluídos" && (
+                {selectedOrder.statusEntrega === "CONCLUÍDO" && (
                   <button
                     onClick={deleteOrder}
                     className="flex items-center font-extrabold text-white text-2xl rounded-2xl transition-opacity px-24 p-3 border-2 bg-secondary_1 hover:bg-secondary_2"
@@ -205,14 +200,12 @@ const GerenciarPedidos = () => {
             <div className="flex flex-col items-center justify-center h-full">
               <span className="text-3xl text-secondary_3_variant">
                 Selecione um pedido para ver os detalhes
-             
-            </span>
+              </span>
             </div>
           )}
         </div>
       </div>
     </div>
-  
   );
 };
 
