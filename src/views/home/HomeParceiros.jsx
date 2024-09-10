@@ -5,10 +5,8 @@ import { Link } from "react-router-dom";
 import "../../../src/index.css";
 import gerencieCardapio from "../../assets/gerencieCardapio.png";
 import gerenciePedidos from "../../assets/gerenciePedidos.png";
-import logo from "../../assets/iffood.png";
 import Sidebar from "../../componentes/ParceirosSidebar";
-import orders from "../../data/orders.json";
-import { getRestauranteNomeFantasia } from "../util/AuthenticationService";
+import { getRestauranteId, getRestauranteNomeFantasia } from "../util/AuthenticationService";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -21,8 +19,8 @@ import {
   PointElement,
   LineElement,
 } from "chart.js";
-import "chartjs-adapter-date-fns"; // Importando adaptador de data
-import { format } from "date-fns";
+import "chartjs-adapter-date-fns";
+import axios from 'axios';
 
 // Registro de todos os componentes necessários
 ChartJS.register(
@@ -52,7 +50,10 @@ const cardsData = [
 ];
 
 const convertDate = (dateStr) => {
-  const [day, month, year] = dateStr.split("/");
+  if (!dateStr) return "";
+  const parts = dateStr.split("/");
+  if (parts.length !== 3) return "";
+  const [day, month, year] = parts;
   return `${year}-${month}-${day}`;
 };
 
@@ -62,28 +63,35 @@ function HomeParceiros() {
   const [totalVendas, setTotalVendas] = useState(0);
   const [valorTotal, setValorTotal] = useState("R$ 0,00");
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+  const [restauranteNomeFantasia, setRestauranteNomeFantasia] = useState("");
 
-  useEffect(() => {
+  const fetchData = async () => {
     try {
-      // Cálculos de total de pedidos, ticket médio, total de vendas e valor total
+      const restauranteId = getRestauranteId();
+      const response = await axios.get(`http://localhost:8080/api/pedido/?restauranteId=${restauranteId}`);
+      const orders = response.data;
+
+      if (!Array.isArray(orders)) {
+        console.error("Dados da API não estão no formato esperado");
+        return;
+      }
+
       const totalPedidos = orders.length;
       const valorTotal = orders.reduce(
-        (acc, order) =>
-          acc + parseFloat(order.subtotal.replace("R$ ", "").replace(",", ".")),
+        (acc, order) => acc + (order.valorTotal || 0),
         0
       );
       const totalItensVendidos = orders.reduce(
-        (acc, order) => acc + order.items.length,
+        (acc, order) => acc + (order.itens ? order.itens.length : 0),
         0
       );
-      const ticketMedio = valorTotal / totalPedidos;
+      const ticketMedio = totalPedidos > 0 ? valorTotal / totalPedidos : 0;
 
       setTotalPedidos(totalPedidos);
       setTicketMedio(`R$ ${ticketMedio.toFixed(2).replace(".", ",")}`);
       setTotalVendas(totalItensVendidos);
       setValorTotal(`R$ ${valorTotal.toFixed(2).replace(".", ",")}`);
 
-      // Dados para o gráfico
       const last7Days = Array.from({ length: 7 }, (_, i) => {
         const date = new Date();
         date.setDate(date.getDate() - i);
@@ -92,22 +100,13 @@ function HomeParceiros() {
 
       const salesData = last7Days.map((date) => {
         const dailyOrders = orders.filter(
-          (order) => convertDate(order.orderDate) === date
+          (order) => convertDate(order.data) === date
         );
         const dailyTotal = dailyOrders.reduce(
-          (acc, order) =>
-            acc +
-            parseFloat(order.subtotal.replace("R$ ", "").replace(",", ".")),
+          (acc, order) => acc + (order.valorTotal || 0),
           0
         );
         return dailyTotal;
-      });
-
-      const totalSalesData = last7Days.map((date) => {
-        const dailyOrders = orders.filter(
-          (order) => convertDate(order.orderDate) === date
-        );
-        return dailyOrders.length;
       });
 
       setChartData({
@@ -125,21 +124,18 @@ function HomeParceiros() {
             borderWidth: 1,
             barThickness: 30,
           },
-          /* {
-                        label: 'Total de Vendas',
-                        data: totalSalesData,
-                        backgroundColor: last7Days.map((_, index) => `hsl(${(index + 4) * 360 / last7Days.length}, 70%, 60%)`),
-                        borderColor: last7Days.map((_, index) => `hsl(${(index + 4) * 360 / last7Days.length}, 70%, 50%)`),
-                        borderWidth: 1,
-                    }, */
         ],
       });
     } catch (error) {
-      console.error("Erro ao calcular os dados do gráfico:", error);
+      console.error("Erro ao buscar dados da API:", error);
     }
-  }, []);
+  };
 
-  const [restauranteNomeFantasia, setRestauranteNomeFantasia] = useState("");
+  useEffect(() => {
+    fetchData();
+    const intervalId = setInterval(fetchData, 30000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     const nomeFantasia = getRestauranteNomeFantasia();
@@ -192,8 +188,8 @@ function HomeParceiros() {
                 </div>
                 <div className="flex flex-col items-center mr-8">
                   <div className="flex items-center">
-                    <FaDollarSign className="text-2xl text-secondary_1 mr-4" />
-                    <p className="text-2xl text-secondary_1 font-bold">Valor Total</p>
+                    <FaChartLine className="text-2xl text-secondary_1 mr-4" />
+                    <p className="text-2xl text-secondary_1 font-extrabold">Valor Total</p>
                   </div>
                   <p className="text-2xl text-secondary_2 font-bold mt-2">{valorTotal}</p>
                 </div>
@@ -201,77 +197,74 @@ function HomeParceiros() {
             </div>
 
             <div className="bg-white p-6 rounded-lg flex-1">
-              
-                  <div className="flex  items-center mb-4">
-                    <FaChartLine className="text-4xl items-center text-secondary_1" />
-                    <p className="flex justify-center items-center text-3xl text-secondary_1 font-extrabold ml-4">Gráfico de Vendas</p>
-                  </div>
-              
-              <div className="h-72">
-                <Line
-                  data={chartData}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        display: true,
-                        labels: {
-                          color: "#1C4F2A",
-                         // Cor do texto da legenda
-                          boxWidth: 0, // Largura da caixa da legenda
-                        },
-                      },
-                      tooltip: {
-                        callbacks: {
-                          label: function (tooltipItem) {
-                            return `${tooltipItem.label}: R$ ${tooltipItem.raw
-                              .toFixed(2)
-                              .replace(".", ",")}`;
-                          },
-                        },
-                        titleColor: "#1C4F2A", // Cor do título do tooltip
-                        bodyColor: "#1C4F2A", // Cor do corpo do tooltip
-                        footerColor: "#1C4F2A", // Cor do rodapé do tooltip
-                      },
-                    },
-                    scales: {
-                      x: {
-                        type: "time",
-                        time: {
-                          unit: "day",
-                          tooltipFormat: "dd/MM/yyyy",
-                          displayFormats: {
-                            day: "dd/MM/yyyy",
-                          },
-                        },
-                        title: {
-                          display: true,
-                          text: "Data",
-                          color: "#1C4F2A", // Cor do texto do título do eixo X
-                        },
-                        ticks: {
-                          color: "#1C4F2A", // Cor dos valores do eixo X
-                        },
-                      },
-                      y: {
-                        title: {
-                          display: true,
-                          text: "Valor",
-                          color: "#1C4F2A", // Cor do texto do título do eixo Y
-                        },
-                        ticks: {
-                          color: "#1C4F2A", // Cor dos valores do eixo Y
-                        },
-                      },
-                    },
-                  }}
-                />
+              <h2 className="text-xl font-bold mb-4">Gráfico de Vendas (Últimos 7 Dias)</h2>
+              <div className="relative chart-container">
+              <Line
+  data={chartData}
+  options={{
+    responsive: true,
+    maintainAspectRatio: false, // Permite que o gráfico se ajuste ao contêiner
+    plugins: {
+      legend: {
+        position: "top",
+        labels: {
+          color: "#1C4F2A",
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: function (tooltipItem) {
+            return `${tooltipItem.label}: R$ ${tooltipItem.raw
+              .toFixed(2)
+              .replace(".", ",")}`;
+          },
+        },
+        titleColor: "#1C4F2A",
+        bodyColor: "#1C4F2A",
+        footerColor: "#1C4F2A",
+      },
+    },
+    scales: {
+      x: {
+        type: "time",
+        time: {
+          unit: "day",
+          tooltipFormat: "dd/MM/yyyy",
+          displayFormats: {
+            day: "dd/MM/yyyy",
+          },
+        },
+        title: {
+          display: true,
+          text: "Data",
+          color: "#1C4F2A",
+        },
+        ticks: {
+          color: "#1C4F2A",
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Valor",
+          color: "#1C4F2A",
+        },
+        ticks: {
+          callback: function (value) {
+            return `R$ ${value.toFixed(2).replace(".", ",")}`; // Formata os valores em reais
+          },
+          color: "#1C4F2A",
+        },
+      },
+    },
+  }}
+/>
+
               </div>
             </div>
           </div>
 
-          <div className=" p-6 rounded-lg mb-6">
+          <div className="p-6 rounded-lg mb-6">
             <div className="flex flex-wrap justify-between">
               {cardsData.map((card) => (
                 <Link
@@ -285,9 +278,9 @@ function HomeParceiros() {
                       src={card.image}
                       alt={card.label}
                     />
-                    <span className="absolute bottom-2 left-2 bg-white text-black px-2 py-1 rounded-md">
+                    {/*<span className="absolute bottom-2 left-2 bg-white text-black px-2 py-1 rounded-md">
                       {card.label}
-                    </span>
+                    </span>*/}
                   </div>
                 </Link>
               ))}

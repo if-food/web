@@ -111,7 +111,7 @@ function NovoItem({ onClose, onAddItem, selectedCategoryId, selectedCategoryName
             Voltar
           </button>
           <div className="text-right">
-            <p className="font-semibold text-secondary_3_variant">Restaurante Aberto {selectedCategoryId} {selectedCategoryName}</p>
+            <p className="font-semibold text-secondary_3_variant">Restaurante Aberto - {selectedCategoryName}</p>
             <p className="text-sm text-secondary_2">Dentro do horário programado</p>
           </div>
         </div>

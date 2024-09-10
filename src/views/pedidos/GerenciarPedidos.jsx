@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Certifique-se de que o CSS do Toastify está importado
 import successImage from '../../assets/Success Illustration.png';
 import mastercardLogo from '../../assets/mastercard.png';
 import Sidebar from '../../componentes/ParceirosSidebar';
 import useOrderManagement from '../../hooks/useGerenciarPedidos';
-
-
 
 const GerenciarPedidos = () => {
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ const GerenciarPedidos = () => {
 
   return (
     <div className="flex flex-col h-screen">
+      <ToastContainer /> {/* ToastContainer deve ser incluído aqui */}
       <div className="flex flex-grow overflow-y-auto">
         <Sidebar className="w-80 min-w-[20rem] flex-shrink-0" />
         <div className="flex flex-col flex-grow mt-5 mb-5">
@@ -87,7 +88,7 @@ const GerenciarPedidos = () => {
           {selectedOrder ? (
             <>
               <div className="flex gap-8 w-full bg-white rounded-md px-8 py-5">
-                <img src={successImage} alt="Success" />
+                <img src={successImage} alt="Success" className="max-w-full h-auto" /> {/* Ajuste de tamanho */}
                 <div className="flex flex-col gap-3">
                   <span className="text-2xl text-secondary_1">
                     Confirme o pedido para começar a preparar
@@ -151,7 +152,7 @@ const GerenciarPedidos = () => {
                 </div>
               </div>
               <div className="flex gap-8 items-center w-full bg-white rounded-md px-8 py-5">
-                <img src={mastercardLogo} alt="Mastercard" />
+                <img src={mastercardLogo} alt="Mastercard" className="max-w-full h-auto" /> {/* Ajuste de tamanho */}
                 <div className="flex flex-col gap-1">
                   <span className="text-secondary font-semibold">
                     {selectedOrder.metodoPagamento}
