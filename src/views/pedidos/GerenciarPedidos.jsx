@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Certifique-se de que o CSS do Toastify está importado
+import 'react-toastify/dist/ReactToastify.css';
 import successImage from '../../assets/Success Illustration.png';
 import mastercardLogo from '../../assets/mastercard.png';
 import Sidebar from '../../componentes/ParceirosSidebar';
@@ -11,6 +11,18 @@ const GerenciarPedidos = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const { orders, selectedOrder, handleOrderClick, confirmOrder, cancelOrder, dispatchOrder, deleteOrder, loading, error } = useOrderManagement();
+  const [visibleSections, setVisibleSections] = useState({
+    PENDENTE: true,
+    EM_PREPARO: true,
+    CONCLUÍDO: true,
+  });
+
+  const toggleSectionVisibility = (status) => {
+    setVisibleSections((prev) => ({
+      ...prev,
+      [status]: !prev[status],
+    }));
+  };
 
   const filteredOrders = orders.filter(order =>
     String(order.id).toLowerCase().includes(searchTerm.toLowerCase())
@@ -21,63 +33,87 @@ const GerenciarPedidos = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <ToastContainer /> {/* ToastContainer deve ser incluído aqui */}
+      <ToastContainer />
       <div className="flex flex-grow overflow-y-auto">
         <Sidebar className="w-80 min-w-[20rem] flex-shrink-0" />
         <div className="flex flex-col flex-grow mt-5 mb-5">
           <div className="relative flex flex-col bg-gray-100 flex-grow overflow-hidden rounded-xl">
             <span className="w-full p-4 mb-10">
-              <input
-                className="w-full input-underline bg-gray-100"
-                placeholder="Busque pelo número do pedido"
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  className="w-full h-12 p-3 pl-10 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="número do pedido"
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fillRule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l4.387 4.387a1 1 0 01-1.414 1.414l-4.387-4.387zM8 14a6 6 0 100-12 6 6 0 000 12z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              </div>
             </span>
             <div className="flex flex-col flex-grow overflow-hidden">
               <div className="flex flex-col flex-grow overflow-y-auto">
-                {["PENDENTE", "EM PREPARO", "CONCLUÍDO"].map((status) => (
+                {["PENDENTE", "EM_PREPARO", "ENTREGUE"].map((status) => (
                   <div className="flex flex-col" key={status}>
                     <div className="flex justify-between items-center bg-gray-300 py-3 px-4">
                       <span className="text-xl font-bold text-secondary_1">
-                        {status}
+                        {status === "ENTREGUE" ? "Concluído" : status.replace('_', ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}
                       </span>
                       <span className="text-xl font-bold text-secondary_1">
                         {filteredOrders.filter((o) => o.statusEntrega === status).length}
                       </span>
+                      <button
+                        onClick={() => toggleSectionVisibility(status)}
+                        className="text-xl font-bold text-secondary_1"
+                      >
+                        {visibleSections[status] ? '-' : '+'}
+                      </button>
                     </div>
-                    <div className="flex flex-col text-secondary_1">
-                      {filteredOrders
-                        .filter((o) => o.statusEntrega === status)
-                        .map((order) => (
-                          <div
-                            key={order.id}
-                            className="cursor-pointer flex justify-between items-center py-3 px-4 border-b-2 border-secondary_3 hover:bg-secondary_2"
-                            onClick={() => handleOrderClick(order.id)}
-                          >
-                            <div className="flex flex-col justify-between">
-                              <span className="font-semibold">{order.id}</span>
-                              <span className="font-semibold">
-                                {order.statusEntrega === "PENDENTE"
-                                  ? "Confirme o pedido"
-                                  : "Entregar até " + order.deliveryTime}
-                              </span>
-                            </div>
-                            <button
-                              className={`${
-                                order.statusEntrega === "PENDENTE"
-                                  ? "bg-atention_02"
-                                  : order.statusEntrega === "EM PREPARO"
-                                  ? "bg-orange-500"
-                                  : "bg-secondary_2"
-                              } text-white py-0.5 px-5 w-fit h-fit rounded-full`}
+                    {visibleSections[status] && (
+                      <div className="flex flex-col text-secondary_1">
+                        {filteredOrders
+                          .filter((o) => o.statusEntrega === status)
+                          .map((order) => (
+                            <div
+                              key={order.id}
+                              className="cursor-pointer flex justify-between items-center py-3 px-4 border-b-2 border-secondary_3 hover:bg-secondary_2"
+                              onClick={() => handleOrderClick(order.id)}
                             >
-                              {order.time}
-                            </button>
-                          </div>
-                        ))}
-                    </div>
+                              <div className="flex flex-col justify-between">
+                                <span className="font-semibold">N {order.id}º</span>
+                                <span className="font-semibold text-sm">
+                                  {order.statusEntrega === "PENDENTE"
+                                    ? "Confirme o pedido"
+                                    : (() => {
+                                      const currentTime = new Date();
+                                      const orderTime = order.dataDoPedido ? new Date(order.dataDoPedido) : null;
+                                      if (!orderTime) {
+                                        return "";
+                                      }
+                                      const displayTime = new Date(orderTime);
+                                      displayTime.setMinutes(displayTime.getMinutes() + 40);
+                                      return "Entregar até " + displayTime.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + " " + displayTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                                    })()
+                                  }
+                                </span>
+                              </div>
+                              <button
+                                className={`${order.statusEntrega === "PENDENTE"
+                                  ? "bg-atention_02"
+                                  : order.statusEntrega === "EM_PREPARO"
+                                    ? "bg-orange-500"
+                                    : "bg-secondary_2"
+                                  } text-white py-0.5 px-5 w-fit h-fit rounded-full`}
+                              >
+                                {order.time}
+                              </button>
+                            </div>
+                          ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -88,7 +124,7 @@ const GerenciarPedidos = () => {
           {selectedOrder ? (
             <>
               <div className="flex gap-8 w-full bg-white rounded-md px-8 py-5">
-                <img src={successImage} alt="Success" className="max-w-full h-auto" /> {/* Ajuste de tamanho */}
+                <img src={successImage} alt="Success" className="max-w-full h-auto" />
                 <div className="flex flex-col gap-3">
                   <span className="text-2xl text-secondary_1">
                     Confirme o pedido para começar a preparar
@@ -104,7 +140,7 @@ const GerenciarPedidos = () => {
                 </span>
                 <div className="w-2 h-2 rounded-full bg-secondary_3"></div>
                 <span className="text-2xl text-secondary_3_variant">
-                  Feito às {selectedOrder.time}
+                  {selectedOrder.dataDoPedido ? `Feito em ` + new Date(selectedOrder.dataDoPedido).toLocaleString('pt-BR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'Data de realização não informada'}
                 </span>
               </div>
               <div className="flex gap-8 items-center w-full bg-white rounded-md px-8 py-5">
@@ -119,16 +155,17 @@ const GerenciarPedidos = () => {
               </div>
               <div className="flex text-secondary_1 flex-col w-full h-fit bg-white rounded-md">
                 <div
-                  className={`${
-                    selectedOrder.statusEntrega === "PENDENTE"
-                      ? "bg-red-300 text-secondary_1 border-b-2 border-secondary_3"
-                      : selectedOrder.statusEntrega === "EM PREPARO"
+                  className={`${selectedOrder.statusEntrega === "PENDENTE"
+                    ? "bg-red-300 text-secondary_1 border-b-2 border-secondary_3"
+                    : selectedOrder.statusEntrega === "EM_PREPARO"
                       ? "bg-orange-300 text-secondary_1 border-b-2 border-secondary_3"
-                      : "bg-green-300 text-secondary_1 border-b-2 border-secondary_3"
-                  } flex justify-between px-8 py-5`}
+                      : selectedOrder.statusEntrega === "CANCELADO"
+                        ? "bg-red-300 text-secondary_1 border-b-2 border-secondary_3"
+                        : "bg-green-300 text-secondary_1 border-b-2 border-secondary_3"
+                    } flex justify-between px-8 py-5`}
                 >
                   <div className="flex flex-col">
-                    <span className="font-extrabold text-xl">{selectedOrder.statusEntrega}</span>
+                    <span className="font-extrabold text-xl">{selectedOrder.statusEntrega.replace('_', ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase())}</span>
                     <span>{selectedOrder.time} minutos para confirmar</span>
                   </div>
                 </div>
@@ -139,20 +176,28 @@ const GerenciarPedidos = () => {
                       className="flex justify-between border-b-2 border-secondary_3 px-8 py-5"
                     >
                       <div className="flex gap-2">
-                        <span className="font-bold">{index + 1}</span>
-                        <span className="text-secondary">{item.produto.titulo}</span>
+                        <span className="font-bold">Item {index + 1}</span>
+                        <span className="text-secondary">{item.produto.titulo}x</span>
+                        <span className="text-secondary">{item.quantidade}x</span>
                       </div>
-                      <span>{item.precoUnitario}</span>
+                      <span>
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.precoUnitario)}
+                      </span>
+                      <span>
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.subtotal)}
+                      </span>
                     </div>
                   ))}
                   <div className="flex justify-between px-8 py-5">
-                    <span className="text-secondary text-xl font-extrabold">Subtotal</span>
-                    <span className="text-xl text-atention_02 font-bold">{selectedOrder.valorTotal}</span>
+                    <span className="text-secondary text-xl font-extrabold">Valor total</span>
+                    <span className="text-xl text-atention_02 font-bold">
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedOrder.valorTotal)}
+                    </span>
                   </div>
                 </div>
               </div>
               <div className="flex gap-8 items-center w-full bg-white rounded-md px-8 py-5">
-                <img src={mastercardLogo} alt="Mastercard" className="max-w-full h-auto" /> {/* Ajuste de tamanho */}
+                <img src={mastercardLogo} alt="Mastercard" className="max-w-full h-auto" />
                 <div className="flex flex-col gap-1">
                   <span className="text-secondary font-semibold">
                     {selectedOrder.metodoPagamento}
@@ -179,7 +224,7 @@ const GerenciarPedidos = () => {
                     </button>
                   </>
                 )}
-                {selectedOrder.statusEntrega === "EM PREPARO" && (
+                {selectedOrder.statusEntrega === "EM_PREPARO" && (
                   <button
                     onClick={dispatchOrder}
                     className="flex items-center font-extrabold text-white text-2xl transition-opacity rounded-2xl px-24 p-3 border-2 bg-secondary_1 hover:bg-secondary_2"
@@ -187,7 +232,7 @@ const GerenciarPedidos = () => {
                     Despachar
                   </button>
                 )}
-                {selectedOrder.statusEntrega === "CONCLUÍDO" && (
+                {selectedOrder.statusEntrega === "ENTREGUE" && (
                   <button
                     onClick={deleteOrder}
                     className="flex items-center font-extrabold text-white text-2xl rounded-2xl transition-opacity px-24 p-3 border-2 bg-secondary_1 hover:bg-secondary_2"

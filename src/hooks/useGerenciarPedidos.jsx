@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { getRestauranteId } from '../views/util/AuthenticationService';
-import { toast } from 'react-toastify'; // Importar toastify
+import { toast } from 'react-toastify';
 
 const useOrderManagement = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [restauranteId, setRestauranteId] = useState('');
 
   useEffect(() => {
     const restauranteId = getRestauranteId();
@@ -43,47 +42,35 @@ const useOrderManagement = () => {
     // Limpa o intervalo quando o componente é desmontado
     return () => clearInterval(intervalId);
 
-  }, [restauranteId, orders]);
+  }, [orders]);
 
   const handleOrderClick = (orderId) => {
     const order = orders.find((o) => o.id === orderId);
     setSelectedOrder(order);
   };
 
-  const updateOrderStatus = async (status) => {
+  const updateOrderStatus = async (body) => {
     if (selectedOrder) {
       try {
-        const updatedOrder = { ...selectedOrder, status };
-        await axios.put(`http://localhost:8080/api/pedido/${selectedOrder.id}`, updatedOrder);
+        const updatedOrder = { ...selectedOrder, ...body };
+        await axios.put(`http://localhost:8080/api/pedido/${selectedOrder.id}`, body);
         const updatedOrders = orders.map((order) =>
           order.id === selectedOrder.id ? updatedOrder : order
         );
         setOrders(updatedOrders);
-        setSelectedOrder((prev) => ({ ...prev, status }));
-        toast.success(`Pedido ${status} com sucesso!`);
+        setSelectedOrder((prev) => ({ ...prev, ...body }));
+        toast.success(`Pedido atualizado com sucesso!`);
       } catch (err) {
         setError(err);
       }
     }
   };
 
-  const confirmOrder = () => updateOrderStatus("EM PREPARO");
+  const confirmOrder = () => updateOrderStatus({ statusEntrega: "EM_PREPARO" });
 
-  const cancelOrder = async () => {
-    if (selectedOrder) {
-      try {
-        await axios.delete(`http://localhost:8080/api/pedido/${selectedOrder.id}`);
-        const updatedOrders = orders.filter((order) => order.id !== selectedOrder.id);
-        setOrders(updatedOrders);
-        setSelectedOrder(null);
-        toast.error(`Pedido ${selectedOrder.id} cancelado.`);
-      } catch (err) {
-        setError(err);
-      }
-    }
-  };
+  const cancelOrder = () => updateOrderStatus({ statusPgto: "CANCELADO", statusEntrega: "CANCELADO" });
 
-  const dispatchOrder = () => updateOrderStatus("CONCLUÍDO");
+  const dispatchOrder = () => updateOrderStatus({ statusEntrega: "EM_ROTA" });
 
   const deleteOrder = async () => {
     if (selectedOrder) {
@@ -109,7 +96,6 @@ const useOrderManagement = () => {
     deleteOrder,
     loading,
     error,
-    restauranteId,
   };
 };
 
