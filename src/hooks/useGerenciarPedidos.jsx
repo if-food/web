@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { getRestauranteId } from '../views/util/AuthenticationService';
 import { toast } from 'react-toastify';
@@ -8,6 +8,8 @@ const useOrderManagement = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const initialLoad = useRef(true); // Track initial load
+  const previousOrders = useRef([]); // Store previous orders
 
   useEffect(() => {
     const restauranteId = getRestauranteId();
@@ -19,18 +21,22 @@ const useOrderManagement = () => {
         const response = await axios.get(`http://localhost:8080/api/pedido/?restauranteId=${restauranteId}`);
         const newOrders = response.data;
 
-        // Verifica se há novos pedidos e exibe uma notificação
-        newOrders.forEach(order => {
-          if (order.statusEntrega === 'PENDENTE' && !orders.some(o => o.id === order.id)) {
-            toast.info(`Novo pedido recebido: ${order.id}`);
-          }
-        });
+        // Verifica se há novos pedidos e exibe uma notificação apenas após o carregamento inicial
+        if (!initialLoad.current) {
+          newOrders.forEach(order => {
+            if (order.statusEntrega === 'PENDENTE' && !previousOrders.current.some(o => o.id === order.id)) {
+              toast.info(`Novo pedido recebido: ${order.id}`);
+            }
+          });
+        }
 
         setOrders(newOrders);
+        previousOrders.current = newOrders; // Update previous orders
       } catch (err) {
         setError(err);
       } finally {
         setLoading(false);
+        initialLoad.current = false; // Set initial load to false after the first fetch
       }
     };
 
@@ -42,7 +48,7 @@ const useOrderManagement = () => {
     // Limpa o intervalo quando o componente é desmontado
     return () => clearInterval(intervalId);
 
-  }, [orders]);
+  }, []); // Remove `orders` from dependency array
 
   const handleOrderClick = (orderId) => {
     const order = orders.find((o) => o.id === orderId);

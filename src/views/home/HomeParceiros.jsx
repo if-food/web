@@ -71,6 +71,8 @@ function HomeParceiros() {
       const response = await axios.get(`http://localhost:8080/api/pedido/?restauranteId=${restauranteId}`);
       const orders = response.data;
 
+      console.log("Dados recebidos da API:", orders);
+
       if (!Array.isArray(orders)) {
         console.error("Dados da API não estão no formato esperado");
         return;
@@ -82,7 +84,7 @@ function HomeParceiros() {
         0
       );
       const totalItensVendidos = orders.reduce(
-        (acc, order) => acc + (order.itens ? order.itens.length : 0),
+        (acc, order) => acc + (order.itens ? order.itens.reduce((itemAcc, item) => itemAcc + item.quantidade, 0) : 0),
         0
       );
       const ticketMedio = totalPedidos > 0 ? valorTotal / totalPedidos : 0;
@@ -100,7 +102,10 @@ function HomeParceiros() {
 
       const salesData = last7Days.map((date) => {
         const dailyOrders = orders.filter(
-          (order) => convertDate(order.data) === date
+          (order) => {
+            const orderDate = order.dataDoPedido ? new Date(order.dataDoPedido).toISOString().split("T")[0] : null;
+            return orderDate === date;
+          }
         );
         const dailyTotal = dailyOrders.reduce(
           (acc, order) => acc + (order.valorTotal || 0),
@@ -108,6 +113,8 @@ function HomeParceiros() {
         );
         return dailyTotal;
       });
+
+      console.log("Dados processados para o gráfico:", { last7Days, salesData });
 
       setChartData({
         labels: last7Days,
@@ -199,67 +206,66 @@ function HomeParceiros() {
             <div className="bg-white p-6 rounded-lg flex-1">
               <h2 className="text-xl font-bold mb-4">Gráfico de Vendas (Últimos 7 Dias)</h2>
               <div className="relative chart-container">
-              <Line
-  data={chartData}
-  options={{
-    responsive: true,
-    maintainAspectRatio: false, // Permite que o gráfico se ajuste ao contêiner
-    plugins: {
-      legend: {
-        position: "top",
-        labels: {
-          color: "#1C4F2A",
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: function (tooltipItem) {
-            return `${tooltipItem.label}: R$ ${tooltipItem.raw
-              .toFixed(2)
-              .replace(".", ",")}`;
-          },
-        },
-        titleColor: "#1C4F2A",
-        bodyColor: "#1C4F2A",
-        footerColor: "#1C4F2A",
-      },
-    },
-    scales: {
-      x: {
-        type: "time",
-        time: {
-          unit: "day",
-          tooltipFormat: "dd/MM/yyyy",
-          displayFormats: {
-            day: "dd/MM/yyyy",
-          },
-        },
-        title: {
-          display: true,
-          text: "Data",
-          color: "#1C4F2A",
-        },
-        ticks: {
-          color: "#1C4F2A",
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Valor",
-          color: "#1C4F2A",
-        },
-        ticks: {
-          callback: function (value) {
-            return `R$ ${value.toFixed(2).replace(".", ",")}`; // Formata os valores em reais
-          },
-          color: "#1C4F2A",
-        },
-      },
-    },
-  }}
-/>
-
+                <Line
+                  data={chartData}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        position: "top",
+                        labels: {
+                          color: "#1C4F2A",
+                        },
+                      },
+                      tooltip: {
+                        callbacks: {
+                          label: function (tooltipItem) {
+                            return `${tooltipItem.label}: R$ ${tooltipItem.raw
+                              .toFixed(2)
+                              .replace(".", ",")}`;
+                          },
+                        },
+                        titleColor: "#1C4F2A",
+                        bodyColor: "#1C4F2A",
+                        footerColor: "#1C4F2A",
+                      },
+                    },
+                    scales: {
+                      x: {
+                        type: "time",
+                        time: {
+                          unit: "day",
+                          tooltipFormat: "dd/MM/yyyy",
+                          displayFormats: {
+                            day: "dd/MM/yyyy",
+                          },
+                        },
+                        title: {
+                          display: true,
+                          text: "Data",
+                          color: "#1C4F2A",
+                        },
+                        ticks: {
+                          color: "#1C4F2A",
+                        },
+                      },
+                      y: {
+                        title: {
+                          display: true,
+                          text: "Valor",
+                          color: "#1C4F2A",
+                        },
+                        ticks: {
+                          callback: function (value) {
+                            return `R$ ${value.toFixed(2).replace(".", ",")}`;
+                          },
+                          color: "#1C4F2A",
+                        },
+                      },
+                    },
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -278,9 +284,6 @@ function HomeParceiros() {
                       src={card.image}
                       alt={card.label}
                     />
-                    {/*<span className="absolute bottom-2 left-2 bg-white text-black px-2 py-1 rounded-md">
-                      {card.label}
-                    </span>*/}
                   </div>
                 </Link>
               ))}

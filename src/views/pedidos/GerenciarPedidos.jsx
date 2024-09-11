@@ -23,7 +23,21 @@ const GerenciarPedidos = () => {
       [status]: !prev[status],
     }));
   };
+  const formatAddress = (address) => {
+    if (!address) return 'Endereço não informado';
 
+    const { cep, estado, cidade, bairro, rua, numero, complemento } = address;
+    return [
+      rua && `${rua}`,
+      numero && `${numero}`,
+      complemento && `${complemento}`,
+      bairro && ` ${bairro}`,
+      cidade && ` ${cidade}`,
+      estado && ` ${estado}`,
+      cep && ` ${cep}`
+    ].filter(Boolean).join(', ');
+  };
+  
   const filteredOrders = orders.filter(order =>
     String(order.id).toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -145,11 +159,11 @@ const GerenciarPedidos = () => {
               </div>
               <div className="flex gap-8 items-center w-full bg-white rounded-md px-8 py-5">
                 <span className="text-sm text-white py-2 px-4 bg-secondary_1 rounded-full font-semibold">
-                  Entregar em
+                  Entregar em {formatAddress(selectedOrder)}
                 </span>
                 <div className="flex flex-col gap-3">
                   <span className="text-secondary_1">
-                    {selectedOrder.address}
+                    
                   </span>
                 </div>
               </div>

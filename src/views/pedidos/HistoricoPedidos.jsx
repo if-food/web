@@ -3,6 +3,25 @@ import axios from 'axios';
 import Sidebar from '../../componentes/ParceirosSidebar'; // Ajuste o caminho conforme a localização do arquivo
 import { getRestauranteId } from '../util/AuthenticationService'; // Certifique-se de que o caminho está correto
 
+// Utility function to format date
+const formatDate = (dateString) => {
+  if (!dateString) return 'INDISPONIVEL';
+  const date = new Date(dateString);
+  if (isNaN(date)) return 'INDISPONIVEL';
+  const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+  return date.toLocaleDateString('pt-BR', options).replace(',', '');
+};
+
+// Utility function to format currency
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+};
+
+// Utility function to format status
+const formatStatus = (status) => {
+  return status.replace(/_/g, ' ');
+};
+
 const PesquisaPedidos = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -31,22 +50,25 @@ const PesquisaPedidos = () => {
     }
   }, [restauranteId]);
 
-  // Obtenha o restauranteId quando o componente for montado
+  // Obtenha o restauranteId quando o componente for montado e busque os pedidos
   useEffect(() => {
     const id = getRestauranteId();
     setRestauranteId(id);
-  }, []);
+    if (id) {
+      fetchOrders();
+    }
+  }, [fetchOrders]);
 
   // Função para filtrar pedidos com base nos critérios
   const filterOrders = (ordersData) => {
     let filteredData = [...ordersData]; // Cria uma cópia dos pedidos
 
     if (startDate) {
-      filteredData = filteredData.filter(order => new Date(order.dataPedido) >= new Date(startDate));
+      filteredData = filteredData.filter(order => new Date(order.dataDoPedido) >= new Date(startDate));
     }
 
     if (endDate) {
-      filteredData = filteredData.filter(order => new Date(order.dataPedido) <= new Date(endDate));
+      filteredData = filteredData.filter(order => new Date(order.dataDoPedido) <= new Date(endDate));
     }
 
     if (orderId) {
@@ -57,6 +79,9 @@ const PesquisaPedidos = () => {
     if (deliveryStatusFilter !== 'Todos') {
       filteredData = filteredData.filter(order => order.statusEntrega === deliveryStatusFilter);
     }
+
+    // Ordena os pedidos por data mais recente
+    filteredData.sort((a, b) => new Date(b.dataDoPedido) - new Date(a.dataDoPedido));
 
     setFilteredOrders(filteredData);
   };
@@ -150,23 +175,22 @@ const PesquisaPedidos = () => {
               <tbody>
                 {filteredOrders.map((order) => (
                   <tr key={order.id}>
-                       <td className="text-lg text-secondary_1 py-2 px-4 border-b border-b-secondary_3">{order.id}</td>
-                       <td className="text-lg text-secondary_1 py-2 px-4 border-b border-b-secondary_3">{order.statusEntrega}</td>
-                       <td className="text-lg text-secondary_1 py-2 px-4 border-b border-b-secondary_3">{order.dataPedido}</td>
-                       <td className="text-lg text-secondary_1 py-2 px-4 border-b border-b-secondary_3">{order.valorTotal}</td>
-                     </tr>
-                   ))}
-                 </tbody>
-               </table>
-             </div>
-           </div>
-         </div>
-         <footer className="bg-gradient-to-t from-[#1F2026] via-[#1c1918] to-[#37383F] text-secondary_3_variant py-4 text-center">
-           <p>&copy; 2024 Seu Restaurante. Todos os direitos reservados.</p>
-         </footer>
-       </div>
-     );
-   };
+                    <td className="text-lg text-secondary_1 py-2 px-4 border-b border-b-secondary_3">{order.id}</td>
+                    <td className="text-lg text-secondary_1 py-2 px-4 border-b border-b-secondary_3">{formatStatus(order.statusEntrega)}</td>
+                    <td className="text-lg text-secondary_1 py-2 px-4 border-b border-b-secondary_3">{formatDate(order.dataDoPedido)}</td>
+                    <td className="text-lg text-secondary_1 py-2 px-4 border-b border-b-secondary_3">{formatCurrency(order.valorTotal)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <footer className="bg-gradient-to-t from-[#1F2026] via-[#1c1918] to-[#37383F] text-secondary_3_variant py-4 text-center">
+        <p>&copy; 2024 Seu Restaurante. Todos os direitos reservados.</p>
+      </footer>
+    </div>
+  );
+};
 
-   export default PesquisaPedidos;
-
+export default PesquisaPedidos;
