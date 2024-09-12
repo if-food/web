@@ -6,6 +6,7 @@ import { formSchema } from '../../validation/cadastroValidation';
 import ParceirosSidebar from '../../componentes/ParceirosSidebar';
 import { getRestauranteId } from '../util/AuthenticationService';
 import iffood from "../../assets/iffood.png";
+import { useNavigate } from 'react-router-dom';
 import pix from "../../assets/pix.png";
 import cartao from "../../assets/mastercard.png";
 import dinheiro from "../../assets/dinheiro.png";
@@ -13,6 +14,7 @@ import vr from "../../assets/vale-refeicao.png";
 import va from "../../assets/VR-Alimentação.png";
 
 const Cadastro = () => {
+    const navigate = useNavigate();
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm({
         resolver: yupResolver(formSchema),
@@ -89,6 +91,7 @@ const Cadastro = () => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
+            
         });
     };
 
@@ -106,6 +109,7 @@ const Cadastro = () => {
         } catch (error) {
             console.error('Erro ao atualizar o perfil', error);
         }
+       
     };
 
 

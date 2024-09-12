@@ -277,7 +277,7 @@ function Cardapio() {
                                                     {category.items.map(item => (
                                                         <tr key={item.id}>
                                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover" />
+                                                                <img src={item.image} alt={item.name} className="w-20 h-20 object-contain" />
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium ">
                                                                 {item.name}
