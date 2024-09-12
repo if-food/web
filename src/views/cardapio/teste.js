@@ -43,8 +43,8 @@ const Cadastro = () => {
         aceitaDinheiro: false,
         aceitaValeRefeicao: false,
         aceitaValeAlimentacao: false,
-        photoLogo: '', // Novo campo para armazenar a URL da imagem do Firebase
-        photoBanner: '' // Novo campo para a URL do banner
+        logoUrl: '', // Novo campo para armazenar a URL da imagem do Firebase
+        bannerUrl: '' // Novo campo para a URL do banner
     });
 
     const [selectedLogo, setSelectedLogo] = useState(null);  // Estado para armazenar o arquivo de logo
@@ -68,23 +68,23 @@ const Cadastro = () => {
             if (selectedLogo) {
                 const logoRef = ref(storage, `restaurantes/${id}/logo`);
                 const logoSnapshot = await uploadBytes(logoRef, selectedLogo);
-                formData.photoLogo = await getDownloadURL(logoSnapshot.ref); // URL do logo no Firebase
+                formData.logoUrl = await getDownloadURL(logoSnapshot.ref); // URL do logo no Firebase
 
                 console.log(logoRef)
                 console.log(selectedLogo)
-                console.log(formData.photoLogo)
+                console.log(formData.logoUrl)
             }
 
             // Upload do banner, se houver uma nova imagem selecionada
             if (selectedBanner) {
                 const bannerRef = ref(storage, `restaurantes/${id}/banner`);
                 const bannerSnapshot = await uploadBytes(bannerRef, selectedBanner);
-                formData.photoBanner = await getDownloadURL(bannerSnapshot.ref); // URL do banner no Firebase
+                formData.bannerUrl = await getDownloadURL(bannerSnapshot.ref); // URL do banner no Firebase
             }
 
             // Garantindo que as URLs estão no formData
-            formData.photoLogo = formData.photoLogo || ''; // Ou alguma URL padrão
-            formData.photoBanner = formData.photoBanner || ''; // Ou alguma URL padrão
+            formData.logoUrl = formData.logoUrl || ''; // Ou alguma URL padrão
+            formData.bannerUrl = formData.bannerUrl || ''; // Ou alguma URL padrão
 
             // Envio dos dados ao backend
             await axios.put(`http://localhost:8080/api/restaurante/${id}`, formData);
@@ -137,8 +137,8 @@ const Cadastro = () => {
                 aceitaDinheiro: response.data.aceitaDinheiro,
                 aceitaValeRefeicao: response.data.aceitaValeRefeicao,
                 aceitaValeAlimentacao: response.data.aceitaValeAlimentacao,
-                photoLogo: response.data.photoLogo,
-                photoBanner: response.data.photoBanner
+                logoUrl: response.data.logoUrl,
+                bannerUrl: response.data.bannerUrl
             });
         } catch (error) {
             console.error('Erro ao buscar os dados', error);
@@ -150,7 +150,7 @@ const Cadastro = () => {
             <div className="flex flex-1 overflow-hidden">
                 <ParceirosSidebar />
                 <div className="w-full flex flex-col items-center justify-center overflow-y-auto">
-                <div className="mb-4 mt-4">
+                    <div className="mb-4 mt-4">
                         <img src={iffood} alt="If Food Logo" className="w-52 h-52 object-contain" />
                     </div>
                     <div className="p-1 rounded-lg shadow-lg w-5/6 overflow-y-auto">
